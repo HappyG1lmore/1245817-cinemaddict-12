@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Андрей Муштавинский](https://up.htmlacademy.ru/ecmascript/12/user/1245817).
-* Наставник: `Неизвестно`.
+* Наставник: Иван Шалагин.
 
 ---
 
