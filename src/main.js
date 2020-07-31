@@ -76,13 +76,8 @@ const createShowMoreButtonTemplate = () => {
 const createTopTemplate = () => {
   return (
     `<section class="films-list--extra">
-    <h2 class="films-list__title">Top rated</h2>
-    <div class="films-list__container films-list__container--toprated">
-    </div>
-  </section>
-  <section class="films-list--extra">
-    <h2 class="films-list__title">Most commented</h2>
-    <div class="films-list__container films-list__container--mostcommented">
+    <h2 class="films-list__title">Title</h2>
+    <div class="films-list__container">
     </div>
   </section>`
   );
@@ -110,6 +105,7 @@ render(mainElement, createMenuTemplate(), `afterbegin`);
 
 const filmsElement = mainElement.querySelector(`.films`);
 render(filmsElement, createTopTemplate(), `beforeend`);
+render(filmsElement, createTopTemplate(), `beforeend`);
 
 const filmsListContainerElement = filmsElement.querySelector(`.films-list__container`);
 render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
@@ -119,13 +115,15 @@ render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
 render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
 render(filmsListContainerElement, createShowMoreButtonTemplate(), `beforeend`);
 
-const topRatedFilmsListContainer = filmsElement.querySelector(`.films-list__container--toprated`);
-const topCommentedFilmsListContainer = filmsElement.querySelector(`.films-list__container--mostcommented`);
+const filmsListExtra = filmsElement.querySelectorAll(`.films-list--extra`);
+const filmsListExtraContainer1 = filmsListExtra[0].querySelector(`.films-list__container`);
+const filmsListExtraContainer2 = filmsListExtra[1].querySelector(`.films-list__container`);
 
-render(topRatedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
-render(topRatedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
-render(topCommentedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
-render(topCommentedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
+render(filmsListExtraContainer1, createFilmCardTemplate(), `afterbegin`);
+render(filmsListExtraContainer1, createFilmCardTemplate(), `afterbegin`);
+
+render(filmsListExtraContainer2, createFilmCardTemplate(), `afterbegin`);
+render(filmsListExtraContainer2, createFilmCardTemplate(), `afterbegin`);
 
 const footerElement = document.querySelector(`.footer`);
 render(footerElement, createFooterStatisticsTemplate(), `beforeend`);
