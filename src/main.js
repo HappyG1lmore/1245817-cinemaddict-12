@@ -73,21 +73,16 @@ const createShowMoreButtonTemplate = () => {
   );
 };
 
-const createTopRatedTemplate = () => {
+const createTopTemplate = () => {
   return (
-    `<section class="films-list--extra toprated">
+    `<section class="films-list--extra">
     <h2 class="films-list__title">Top rated</h2>
-    <div class="films-list__container">
+    <div class="films-list__container films-list__container--toprated">
     </div>
-  </section>`
-  );
-};
-
-const createMostCommentedTemplate = () => {
-  return (
-    `<section class="films-list--extra mostcommented">
+  </section>
+  <section class="films-list--extra">
     <h2 class="films-list__title">Most commented</h2>
-    <div class="films-list__container">
+    <div class="films-list__container films-list__container--mostcommented">
     </div>
   </section>`
   );
@@ -114,9 +109,7 @@ render(mainElement, createSortingTemplate(), `afterbegin`);
 render(mainElement, createMenuTemplate(), `afterbegin`);
 
 const filmsElement = mainElement.querySelector(`.films`);
-
-render(filmsElement, createTopRatedTemplate(), `beforeend`);
-render(filmsElement, createMostCommentedTemplate(), `beforeend`);
+render(filmsElement, createTopTemplate(), `beforeend`);
 
 const filmsListContainerElement = filmsElement.querySelector(`.films-list__container`);
 render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
@@ -126,14 +119,13 @@ render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
 render(filmsListContainerElement, createFilmCardTemplate(), `afterbegin`);
 render(filmsListContainerElement, createShowMoreButtonTemplate(), `beforeend`);
 
-const topRatedFilmsList = filmsElement.querySelector(`.films-list--extra.toprated`);
-const mostCommentedFilmsList = filmsElement.querySelector(`.films-list--extra.mostcommented`);
-const topRatedListContainer = topRatedFilmsList.querySelector(`.films-list__container`);
-const mostCommentedListContainer = mostCommentedFilmsList.querySelector(`.films-list__container`);
-render(topRatedListContainer, createFilmCardTemplate(), `afterbegin`);
-render(topRatedListContainer, createFilmCardTemplate(), `afterbegin`);
-render(mostCommentedListContainer, createFilmCardTemplate(), `afterbegin`);
-render(mostCommentedListContainer, createFilmCardTemplate(), `afterbegin`);
+const topRatedFilmsListContainer = filmsElement.querySelector(`.films-list__container--toprated`);
+const topCommentedFilmsListContainer = filmsElement.querySelector(`.films-list__container--mostcommented`);
+
+render(topRatedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
+render(topRatedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
+render(topCommentedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
+render(topCommentedFilmsListContainer, createFilmCardTemplate(), `afterbegin`);
 
 const footerElement = document.querySelector(`.footer`);
 render(footerElement, createFooterStatisticsTemplate(), `beforeend`);
