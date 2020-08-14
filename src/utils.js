@@ -1,3 +1,22 @@
+
+export const ZERO = 0;
+
+export const ENTER_KEYCODE = 13;
+export const ESC_KEYCODE = 27;
+export const MOUSE_LBUTTON_KEYCODE = 0;
+
+export const isEnterPressed = function (evt) {
+  return evt.keyCode === ENTER_KEYCODE;
+};
+
+export const isEscPressed = function (evt) {
+  return evt.keyCode === ESC_KEYCODE;
+};
+
+export const isMouseLeftPressed = function (evt) {
+  return evt.button === MOUSE_LBUTTON_KEYCODE;
+};
+
 export const getRandomIntFromRange = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -28,6 +47,6 @@ export const getRandomTime = () => {
 export const getRandomDate = () => {
   const currentDate = new Date();
   const randomDate = new Date(getRandomIntFromRange(0, currentDate.getTime()));
-
-  return new Date(randomDate);
+  return Date.parse(randomDate);
 };
+

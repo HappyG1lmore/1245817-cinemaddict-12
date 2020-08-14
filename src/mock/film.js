@@ -6,7 +6,6 @@ const MAX_GENRES = 3;
 const MAX_COMMENTS = 30;
 const MIN_RATING = 0.1;
 const MAX_RATING = 10;
-const FILMS_COUNT = 20;
 
 const FILM_TITLES = [
   `Leon`,
@@ -83,19 +82,10 @@ const COUNTRIES = [
 
 const createDiscription = function () {
   const phrases = getRandomLengthArray(PHRASE, MAX_PHRASE);
-  return phrases.join();
-};
-
-const createGenres = function () {
-  const genres = getRandomLengthArray(GENRES, MAX_GENRES);
-  return genres.join();
+  return phrases.join(` `);
 };
 
 const createComment = function (amount) {
-  if (!amount) {
-    return null;
-  }
-
   const comments = [];
   for (let i = 0; i < amount; i++) {
     const phrases = getRandomLengthArray(PHRASE, MAX_PHRASE);
@@ -110,16 +100,20 @@ const createComment = function (amount) {
   return comments;
 };
 
+export const getRandomRating = function (min, max) {
+  return ((min + Math.random() * max)).toFixed(1);
+};
+
 export const generateFilm = () => {
   return {
     title: getRandomArrayItem(FILM_TITLES),
     poster: getRandomArrayItem(POSTERS),
     description: createDiscription(),
-    rating: getRandomIntFromRange(MIN_RATING, MAX_RATING),
-    genres: createGenres(),
+    rating: getRandomRating(MIN_RATING, MAX_RATING),
+    genres: getRandomLengthArray(GENRES, MAX_GENRES),
     country: getRandomArrayItem(COUNTRIES),
-    actors: new Set(getRandomLengthArray(NAMES, MAX_NAMES)),
-    writers: new Set(getRandomLengthArray(NAMES, MAX_NAMES)),
+    actors: getRandomLengthArray(NAMES, MAX_NAMES),
+    writers: getRandomLengthArray(NAMES, MAX_NAMES),
     director: getRandomArrayItem(NAMES),
     date: getRandomDate(),
     runtime: getRandomTime(),
@@ -128,14 +122,6 @@ export const generateFilm = () => {
     isWatched: getRandomBoolean(),
     isFavorite: getRandomBoolean(),
   };
-};
-
-export const generateListFilms = () => {
-  const listFilms = [];
-  for (let i = 0; i < FILMS_COUNT; i++) {
-    listFilms.push(generateFilm());
-  }
-  return listFilms;
 };
 
 // добавить в рейтинг десятые после запятой
