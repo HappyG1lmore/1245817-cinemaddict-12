@@ -3,7 +3,7 @@ import {getRandomIntFromRange, getRandomArrayItem, getRandomLengthArray, getRand
 const MAX_PHRASE = 5;
 const MAX_NAMES = 5;
 const MAX_GENRES = 3;
-const MAX_COMMENTS = 30;
+const MAX_COMMENTS = 5;
 const MIN_RATING = 0.1;
 const MAX_RATING = 10;
 
@@ -90,7 +90,7 @@ const createComment = function (amount) {
   for (let i = 0; i < amount; i++) {
     const phrases = getRandomLengthArray(PHRASE, MAX_PHRASE);
     comments.push({
-      text: phrases.join(),
+      text: phrases.join(` `),
       emotion: getRandomArrayItem(EMOTIONS),
       autor: getRandomArrayItem(NAMES),
       date: getRandomDate(),
@@ -101,7 +101,7 @@ const createComment = function (amount) {
 };
 
 export const getRandomRating = function (min, max) {
-  return ((min + Math.random() * max)).toFixed(1);
+  return ((Math.random() * max)).toFixed(1);
 };
 
 export const generateFilm = () => {
@@ -124,6 +124,6 @@ export const generateFilm = () => {
   };
 };
 
-// добавить в рейтинг десятые после запятой
+
 // Object.freeze втф
-// export const films = new Array(IterationCount.CARD).fill().map(createFilmInfo)
+

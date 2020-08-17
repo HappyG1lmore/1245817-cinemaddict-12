@@ -1,4 +1,5 @@
-import moment from "moment";
+
+import {getDateInMS, getDateInComment} from "../utils.js";
 
 export const createPopupTemplate = (film) => {
   const {
@@ -18,19 +19,12 @@ export const createPopupTemplate = (film) => {
   } = film;
   const commentsCount = comments.length;
 
-  const getDateInMS = (msec) => {
-    const maxDate = new Date(msec);
-    return moment(maxDate).format(`DD MMMM YYYY`);
-  };
-
-  const getDateInComment = (msec) => {
-    const maxDate = new Date(msec);
-    return moment(maxDate).fromNow();
-    // return moment(maxDate).format(`YYYY/MM/DD HH:mm`)
-  };
-
   const getGenreElements = (array) => {
     return array.reduce((acc, genre) => acc + `<span class="film-details__genre">${genre}</span>`, ``);
+  };
+
+  const getNamesList = (array) => {
+    return array.join(`, `);
   };
 
   const getCommentElements = (array) => {
@@ -82,11 +76,11 @@ export const createPopupTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">${writers}</td>
+                <td class="film-details__cell">${getNamesList(writers)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${actors}</td>
+                <td class="film-details__cell">${getNamesList(actors)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>

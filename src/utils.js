@@ -1,5 +1,5 @@
+import moment from "moment";
 
-export const ZERO = 0;
 
 export const ENTER_KEYCODE = 13;
 export const ESC_KEYCODE = 27;
@@ -50,3 +50,13 @@ export const getRandomDate = () => {
   return Date.parse(randomDate);
 };
 
+export const getDateInMS = (msec) => {
+  const maxDate = new Date(msec);
+  return moment(maxDate).format(`DD MMMM YYYY`);
+};
+
+export const getDateInComment = (msec) => {
+  const maxDate = new Date(msec);
+  return moment(maxDate).fromNow();
+  // return moment(maxDate).format(`YYYY/MM/DD HH:mm`)
+};

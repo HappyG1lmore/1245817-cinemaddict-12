@@ -34,16 +34,27 @@ export const createFilmCardTemplate = (film) => {
       <span class="film-card__genre">${getRandomArrayItem(genres)}</span>
     </p>
     <img src="./images/posters/${poster}" alt="" class="film-card__poster">
-    <p class="film-card__description">${description.length < MAX_COMMENT_LENGTH ? description : (description.slice(ZERO, (MAX_COMMENT_LENGTH)) + ` ...`)}</p>
+    <p class="film-card__description">${
+    description.length < MAX_COMMENT_LENGTH
+      ? description
+      : (description.slice(ZERO, (MAX_COMMENT_LENGTH)) + ` ...`)
+    }</p>
     <a class="film-card__comments">${commentsCount} comments</a>
     <form class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isWatchlist ? `film-card__controls-item--active` : ``}">Add to watchlist</button>
-
-
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched  ${isWatched ? `film-card__controls-item--active` : ``}">Mark as watched</button>
-
+      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${
+    isWatchlist
+      ? `film-card__controls-item--active`
+      : ``
+    }">Add to watchlist</button>
+      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched  ${
+    isWatched
+      ? `film-card__controls-item--active`
+      : ``}">Mark as watched</button>
       <button class="film-card__controls-item button film-card__controls-item--favorite
-      ${isFavorite ? `film-card__controls-item--active` : ``}">Mark as favorite</button>
+      ${
+    isFavorite
+      ? `film-card__controls-item--active`
+      : ``}">Mark as favorite</button>
     </form>
   </article>`
   );
