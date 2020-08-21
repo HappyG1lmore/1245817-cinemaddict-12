@@ -1,9 +1,37 @@
 import moment from "moment";
 
+const ESC_KEYCODE = 27;
 
 export const ENTER_KEYCODE = 13;
-export const ESC_KEYCODE = 27;
 export const MOUSE_LBUTTON_KEYCODE = 0;
+
+
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
 
 export const isEnterPressed = function (evt) {
   return evt.keyCode === ENTER_KEYCODE;

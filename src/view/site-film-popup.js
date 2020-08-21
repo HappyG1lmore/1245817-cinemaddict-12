@@ -1,7 +1,23 @@
+import {getDateInMS, getDateInComment, createElement} from "../utils.js";
 
-import {getDateInMS, getDateInComment} from "../utils.js";
+const FILM_INFO = {
+  poster: ``,
+  title: ``,
+  rating: ``,
+  actors: ``,
+  writers: ``,
+  director: ``,
+  runtime: {
+    hours: ``,
+    minutes: ``},
+  genres: ``,
+  comments: ``,
+  description: ``,
+  date: ``,
+  country: ``
+};
 
-export const createPopupTemplate = (film) => {
+const createPopupTemplate = (film) => {
   const {
     poster,
     title,
@@ -165,3 +181,26 @@ export const createPopupTemplate = (film) => {
 `
   );
 };
+
+export default class FilmPopup {
+  constructor(film) {
+    this._film = film || FILM_INFO;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

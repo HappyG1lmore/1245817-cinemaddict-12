@@ -116,6 +116,7 @@ export const generateFilm = () => {
     writers: getRandomLengthArray(NAMES, MAX_NAMES),
     director: getRandomArrayItem(NAMES),
     date: getRandomDate(),
+    id: ``,
     runtime: getRandomTime(),
     comments: createComment(getRandomIntFromRange(0, MAX_COMMENTS)),
     isWatchlist: getRandomBoolean(),

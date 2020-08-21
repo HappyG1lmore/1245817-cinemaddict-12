@@ -1,5 +1,6 @@
+import {createElement} from "../utils.js";
 
-export const createMenuTemplate = (filter) => {
+const createMenuTemplate = (filter) => {
   const [watchList, watched, isFavorite] = filter;
 
   return (
@@ -16,3 +17,25 @@ export const createMenuTemplate = (filter) => {
   );
 };
 
+export default class Filter {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
