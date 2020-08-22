@@ -2,22 +2,6 @@ import {getRandomArrayItem, createElement} from "../utils.js";
 
 const MAX_COMMENT_LENGTH = 140;
 
-const FILM_INFO = {
-  poster: ``,
-  title: ``,
-  rating: ``,
-  runtime: {
-    hours: ``,
-    minutes: ``},
-  genres: ``,
-  comments: ``,
-  description: ``,
-  date: ``,
-  isWatchlist: false,
-  isWatched: false,
-  isFavorite: false
-};
-
 const createFilmCardTemplate = (film) => {
   const {
     poster,
@@ -80,7 +64,7 @@ const createFilmCardTemplate = (film) => {
 
 export default class FilmCard {
   constructor(film) {
-    this._film = film || FILM_INFO;
+    this._film = film;
     this._element = null;
   }
 

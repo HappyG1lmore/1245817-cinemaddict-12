@@ -9,7 +9,7 @@ const createUserRankTemplate = () => {
   );
 };
 
-export default class SiteUserRankView {
+export default class SiteUserRank {
   constructor() {
     this._element = null;
   }
@@ -30,6 +30,3 @@ export default class SiteUserRankView {
     this._element = null;
   }
 }
-
-
-// почему не работает импорт дефолтной с другим именем
