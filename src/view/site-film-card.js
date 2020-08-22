@@ -1,8 +1,8 @@
-import {getRandomArrayItem, ZERO} from "../utils.js";
+import {getRandomArrayItem, createElement} from "../utils.js";
 
 const MAX_COMMENT_LENGTH = 140;
 
-export const createFilmCardTemplate = (film) => {
+const createFilmCardTemplate = (film) => {
   const {
     poster,
     title,
@@ -12,10 +12,12 @@ export const createFilmCardTemplate = (film) => {
     comments,
     description,
     date,
+    id,
     isWatchlist,
     isWatched,
     isFavorite
   } = film;
+
   const commentsCount = comments.length;
 
   const getYearInMS = (msec) => {
@@ -25,7 +27,7 @@ export const createFilmCardTemplate = (film) => {
   };
 
   return (
-    `<article class="film-card">
+    `<article class="film-card" data-id="${id}";>
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
@@ -37,7 +39,7 @@ export const createFilmCardTemplate = (film) => {
     <p class="film-card__description">${
     description.length < MAX_COMMENT_LENGTH
       ? description
-      : (description.slice(ZERO, (MAX_COMMENT_LENGTH)) + ` ...`)
+      : (description.slice(0, (MAX_COMMENT_LENGTH)) + ` ...`)
     }</p>
     <a class="film-card__comments">${commentsCount} comments</a>
     <form class="film-card__controls">
@@ -60,5 +62,26 @@ export const createFilmCardTemplate = (film) => {
   );
 };
 
-// как в html написать условие? (например по кол-ву комментов)
-// Год заменить (как достать из объекта даты?)
+export default class FilmCard {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

@@ -1,4 +1,5 @@
 import {getRandomIntFromRange, getRandomArrayItem, getRandomLengthArray, getRandomBoolean, getRandomTime, getRandomDate} from "../utils.js";
+import {nanoid} from 'nanoid';
 
 const MAX_PHRASE = 5;
 const MAX_NAMES = 5;
@@ -116,6 +117,7 @@ export const generateFilm = () => {
     writers: getRandomLengthArray(NAMES, MAX_NAMES),
     director: getRandomArrayItem(NAMES),
     date: getRandomDate(),
+    id: nanoid(),
     runtime: getRandomTime(),
     comments: createComment(getRandomIntFromRange(0, MAX_COMMENTS)),
     isWatchlist: getRandomBoolean(),

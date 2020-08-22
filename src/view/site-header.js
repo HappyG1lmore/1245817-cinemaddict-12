@@ -1,20 +1,16 @@
 import {createElement} from "../utils.js";
 
-const createFilmsContainer = () => {
-  return (
-    `<section class="films">
-
-    </section>`
-  );
+const createHeaderTemplate = () => {
+  return `<section class="header container"></section>`;
 };
 
-export default class FilmsContainer {
+export default class Header {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createFilmsContainer();
+    return createHeaderTemplate();
   }
 
   getElement() {
