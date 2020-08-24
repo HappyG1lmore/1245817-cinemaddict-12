@@ -14,7 +14,7 @@ import {generateFilm} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
 import {isEscPressed, render, RenderPosition} from "./utils.js";
 
-const FILMS_СOUNT = 10;
+const FILMS_СOUNT = 11;
 const FILMS_СOUNT_PER_STEP = 5;
 const FILMS_COUNT_MAX_TOP = 2;
 
@@ -90,6 +90,7 @@ const renderFilms = (films) => {
     renderFilmsListTop();
   }
 
+
   films
   .slice(0, FILMS_СOUNT_PER_STEP)
   .forEach((film) => renderFilm(filmsListContainerElement, film));
@@ -101,8 +102,7 @@ const renderFilms = (films) => {
     const loadMoreButtonComponent = new LoadMoreButtonView();
     render(filmsListComponent.getElement(), loadMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
 
-    loadMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    loadMoreButtonComponent.setClickHandler(() => {
       films
     .slice(renderedFilmCards, (renderedFilmCards + FILMS_СOUNT_PER_STEP))
     .forEach((film) => renderFilm(filmsListContainerElement, film));
@@ -139,6 +139,12 @@ const renderFilms = (films) => {
       }
     }
 
+    filmsContainerComponent.setClickPopupHandler(() => {
+      console.log(`Работает`);
+      onFilmCardClick();
+    });
+
+
     const filmDetails = document.querySelector(`.film-details`);
     const filmDetailsBtnClose = filmDetails.querySelector(`.film-details__close-btn`);
 
@@ -150,8 +156,6 @@ const renderFilms = (films) => {
       }
     });
   };
-
-  filmsElement.addEventListener(`click`, onFilmCardClick);
 };
 
 renderFilms(listFilms);

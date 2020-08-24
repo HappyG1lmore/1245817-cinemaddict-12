@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "../abstract.js";
 
 const createTopTemplate = (title) => {
   return (
@@ -10,25 +10,13 @@ const createTopTemplate = (title) => {
   );
 };
 
-export default class ListContainerTop {
+export default class ListContainerTop extends AbstractView {
   constructor(title) {
+    super();
     this._title = title;
-    this._element = null;
   }
 
   getTemplate() {
     return createTopTemplate(this._title);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
