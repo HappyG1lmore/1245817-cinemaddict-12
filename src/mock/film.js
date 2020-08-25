@@ -1,4 +1,4 @@
-import {getRandomIntFromRange, getRandomArrayItem, getRandomLengthArray, getRandomBoolean, getRandomTime, getRandomDate} from "../utils.js";
+import {getRandomIntFromRange, getRandomArrayItem, getRandomLengthArray, getRandomBoolean, getRandomTime, getRandomDate} from "../utils/common.js";
 import {nanoid} from 'nanoid';
 
 const MAX_PHRASE = 5;

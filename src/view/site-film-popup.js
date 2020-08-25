@@ -1,4 +1,5 @@
-import {getDateInMS, getDateInComment} from "../utils.js";
+import {getDateInMS, getDateInComment} from "../utils/common.js";
+
 import AbstractView from "../abstract.js";
 
 const createPopupTemplate = (film) => {
@@ -170,9 +171,22 @@ export default class FilmPopup extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._film);
   }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  setClickBtnClose(callback) {
+    this._callback.click = callback;
+    const filmDetailsBtnClose = this.getElement().querySelector(`.film-details__close-btn`);
+    filmDetailsBtnClose.addEventListener(`click`, this._clickHandler);
+  }
 }
+

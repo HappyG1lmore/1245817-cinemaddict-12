@@ -20,7 +20,7 @@ export default class FilmsContainer extends AbstractView {
 
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.click(evt);
   }
 
   setClickPopupHandler(callback) {

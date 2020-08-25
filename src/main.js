@@ -12,7 +12,8 @@ import FilmPopupView from "./view/site-film-popup.js";
 
 import {generateFilm} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
-import {isEscPressed, render, RenderPosition} from "./utils.js";
+import {isEscPressed} from "./utils/common.js";
+import {render, RenderPosition} from "./utils/render.js";
 
 const FILMS_СOUNT = 11;
 const FILMS_СOUNT_PER_STEP = 5;
@@ -116,7 +117,7 @@ const renderFilms = (films) => {
     });
   }
 
-  const onFilmCardClick = (evt) => {
+  const filmCardClickHandler = (evt) => {
     const target = evt.target;
     if (target.classList.contains(`film-card__poster`) ||
       target.classList.contains(`film-card__title`) ||
@@ -132,23 +133,21 @@ const renderFilms = (films) => {
       activePopup.remove();
     }
 
+    let filmPopup;
+
     for (let film of films) {
       if (film.id === idForPopup) {
-        render(footerElement, new FilmPopupView(film).getElement(), RenderPosition.BEFOREEND);
+        filmPopup = new FilmPopupView(film);
+        render(footerElement, filmPopup.getElement(), RenderPosition.BEFOREEND);
         break;
       }
     }
 
-    filmsContainerComponent.setClickPopupHandler(() => {
-      console.log(`Работает`);
-      onFilmCardClick();
-    });
-
-
     const filmDetails = document.querySelector(`.film-details`);
-    const filmDetailsBtnClose = filmDetails.querySelector(`.film-details__close-btn`);
 
-    filmDetailsBtnClose.addEventListener(`click`, () => filmDetails.remove());
+    filmPopup.setClickBtnClose(() => {
+      filmDetails.remove();
+    });
 
     document.addEventListener(`keydown`, (evt) => {
       if (isEscPressed(evt)) {
@@ -156,6 +155,8 @@ const renderFilms = (films) => {
       }
     });
   };
+
+  filmsContainerComponent.setClickPopupHandler(filmCardClickHandler);
 };
 
 renderFilms(listFilms);
