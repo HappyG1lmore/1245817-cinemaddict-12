@@ -9,13 +9,14 @@ import FilmsContainer from "./view/site-films-container.js";
 import FilmsList from "./view/site-films-list.js";
 import StatisticsView from "./view/site-footer-statistics.js";
 import FilmPopupView from "./view/site-film-popup.js";
+import FilmsPresenter from "./presenter/films-presenter.js";
 
 import {generateFilm} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
 import {isEscPressed} from "./utils/common.js";
 import {render, RenderPosition} from "./utils/render.js";
 
-const FILMS_СOUNT = 11;
+const FILMS_СOUNT = 8;
 const FILMS_СOUNT_PER_STEP = 5;
 const FILMS_COUNT_MAX_TOP = 2;
 
@@ -24,20 +25,25 @@ const listFilms = new Array(FILMS_СOUNT).fill().map(generateFilm);
 const headerElement = document.querySelector(`.header`);
 render(headerElement, new SiteUserRankView().getElement(), RenderPosition.BEFOREEND);
 
+const mainElement = document.querySelector(`.main`);
+
+const filters = generateFilter(listFilms);
+render(mainElement, new FilterView(filters), RenderPosition.AFTERBEGIN);
+
+
+const filmsPresenter = new FilmsPresenter(mainElement);
+
+// filmsPresenter.init(listFilms);
+
 const renderFilms = (films) => {
-  const mainElement = document.querySelector(`.main`);
 
-  render(mainElement, new SortView().getElement(), RenderPosition.AFTERBEGIN);
-
-  const filters = generateFilter(films);
-  render(mainElement, new FilterView(filters).getElement(), RenderPosition.AFTERBEGIN);
-
+  render(mainElement, new SortView(), RenderPosition.AFTERBEGIN);
 
   const filmsContainerComponent = new FilmsContainer();
-  render(mainElement, filmsContainerComponent.getElement(), RenderPosition.BEFOREEND);
+  render(mainElement, filmsContainerComponent, RenderPosition.BEFOREEND);
 
   const filmsListComponent = new FilmsList();
-  render(filmsContainerComponent.getElement(), filmsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+  render(filmsContainerComponent, filmsListComponent, RenderPosition.AFTERBEGIN);
 
   const filmsListContainerElement = filmsListComponent.getElement().querySelector(`.films-list__container`);
 
@@ -46,12 +52,12 @@ const renderFilms = (films) => {
   const renderFilm = (filmListElement, film) => {
     const filmComponent = new FilmCardView(film);
 
-    render(filmListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
+    render(filmListElement, filmComponent, RenderPosition.BEFOREEND);
   };
 
   const renderFilmsListTop = () => {
-    render(filmsElement, new ListContainerTop(`Top rated`).getElement(), RenderPosition.BEFOREEND);
-    render(filmsElement, new ListContainerTop(`Most commented`).getElement(), RenderPosition.BEFOREEND);
+    render(filmsElement, new ListContainerTop(`Top rated`), RenderPosition.BEFOREEND);
+    render(filmsElement, new ListContainerTop(`Most commented`), RenderPosition.BEFOREEND);
 
     const filmsListTop = filmsElement.querySelectorAll(`.films-list--extra`);
     const filmsListTopRatedContainer = filmsListTop[0].querySelector(`.films-list__container`);
@@ -86,7 +92,7 @@ const renderFilms = (films) => {
   };
 
   if (films.length === 0) {
-    render(filmsListContainerElement, new NoFilms().getElement(), RenderPosition.BEFOREEND);
+    render(filmsListContainerElement, new NoFilms(), RenderPosition.BEFOREEND);
   } else {
     renderFilmsListTop();
   }
@@ -101,7 +107,7 @@ const renderFilms = (films) => {
     let renderedFilmCards = FILMS_СOUNT_PER_STEP;
 
     const loadMoreButtonComponent = new LoadMoreButtonView();
-    render(filmsListComponent.getElement(), loadMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
+    render(filmsListComponent.getElement(), loadMoreButtonComponent, RenderPosition.BEFOREEND);
 
     loadMoreButtonComponent.setClickHandler(() => {
       films
@@ -138,7 +144,7 @@ const renderFilms = (films) => {
     for (let film of films) {
       if (film.id === idForPopup) {
         filmPopup = new FilmPopupView(film);
-        render(footerElement, filmPopup.getElement(), RenderPosition.BEFOREEND);
+        render(footerElement, filmPopup, RenderPosition.BEFOREEND);
         break;
       }
     }
