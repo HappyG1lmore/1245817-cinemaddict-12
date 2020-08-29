@@ -17,12 +17,16 @@ export default class FilmsPresenter {
   constructor(mainContainer) {
     this._mainContainer = mainContainer;
 
+    this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
+    this._renderedMaxTopCount = FILMS_COUNT_MAX_TOP;
+
     this._sortComponent = new SortView();
     this._filmsContainerComponent = new FilmsContainer();
     this._filmsListComponent = new FilmsList();
 
     this._listContainerTopCommentComponent = new ListContainerTop(`Most commented`);
     this._listContainerTopRatedComponent = new ListContainerTop(`Top rated`);
+
     this._noFilmsComponent = new NoFilms();
     this._loadMoreButtonComponent = new LoadMoreButtonView();
     this._popupComponent = new FilmPopupView();
@@ -68,7 +72,7 @@ export default class FilmsPresenter {
       tempSortArray.sort(function (a, b) {
         return b.rating - a.rating;
       });
-      return tempSortArray.slice(0, FILMS_COUNT_MAX_TOP);
+      return tempSortArray.slice(0, this._renderedMaxTopCount);
     };
 
     const preparesTopCommented = () => {
@@ -76,7 +80,7 @@ export default class FilmsPresenter {
       tempSortArray.sort(function (a, b) {
         return b.comments.length - a.comments.length;
       });
-      return tempSortArray.slice(0, FILMS_COUNT_MAX_TOP);
+      return tempSortArray.slice(0, this._renderedMaxTopCount);
     };
 
     const topCommentedFilms = preparesTopCommented();
@@ -97,20 +101,19 @@ export default class FilmsPresenter {
 
   _renderCards(films) {
     films
-    .slice(0, FILMS_СOUNT_PER_STEP)
+    .slice(0, this._renderedFilmsCount)
     .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
-    if (films.length > FILMS_СOUNT_PER_STEP) {
 
-      let renderedFilmCards = FILMS_СOUNT_PER_STEP;
-
+    if (films.length > this._renderedFilmsCount) {
+      let renderedFilmCards = this._renderedFilmsCount;
       render(this._filmsListComponent, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
 
       this._loadMoreButtonComponent.setClickHandler(() => {
         films
-    .slice(renderedFilmCards, (renderedFilmCards + FILMS_СOUNT_PER_STEP))
+    .slice(renderedFilmCards, (renderedFilmCards + this._renderedFilmsCount))
     .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
 
-        renderedFilmCards += FILMS_СOUNT_PER_STEP;
+        renderedFilmCards += this._renderedFilmsCount;
 
         if (renderedFilmCards >= films.length) {
           this._loadMoreButtonComponent.getElement().remove();
