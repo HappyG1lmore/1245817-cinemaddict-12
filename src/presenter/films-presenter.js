@@ -24,6 +24,7 @@ export default class FilmsPresenter {
     this._renderedMaxTopCount = FILMS_COUNT_MAX_TOP;
 
     this._filmsContainerComponent = new FilmsContainer();
+
     this._filmsListComponent = new FilmsList();
 
     this._listContainerTopCommentComponent = new ListContainerTop(`Most commented`);
@@ -35,7 +36,10 @@ export default class FilmsPresenter {
 
     this._sortComponent = new SortView();
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
     this._currentSortType = SortType.DEFAULT;
+
+    this._filmsContainerComponent.setClickPopupHandler(this._filmCardClickHandler);
 
     this._filmsListContainerElement = null;
     this._filmListElement = null;
@@ -82,7 +86,7 @@ export default class FilmsPresenter {
 
 
   _renderSort() {
-    render(this._mainContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    render(this._mainContainer, this._sortComponent, RenderPosition.BEFOREEND);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
@@ -150,8 +154,8 @@ export default class FilmsPresenter {
 
       this._loadMoreButtonComponent.setClickHandler(() => {
         this._films
-    .slice(renderedFilmCards, (renderedFilmCards + this._renderedFilmsCount))
-    .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
+          .slice(renderedFilmCards, (renderedFilmCards + this._renderedFilmsCount))
+          .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
 
         renderedFilmCards += this._renderedFilmsCount;
 
@@ -163,51 +167,47 @@ export default class FilmsPresenter {
     }
   }
 
-  _renderPopup() {
-    const filmCardClickHandler = (evt) => {
-      const target = evt.target;
-      if (target.classList.contains(`film-card__poster`) ||
-        target.classList.contains(`film-card__title`) ||
-        target.classList.contains(`film-card__comments`)) {
-        const id = evt.target.closest(`[data-id]`).dataset.id;
-        openPopup(id);
+  _filmCardClickHandler(evt) {
+    const target = evt.target;
+    if (target.classList.contains(`film-card__poster`) ||
+      target.classList.contains(`film-card__title`) ||
+      target.classList.contains(`film-card__comments`)) {
+      const id = evt.target.closest(`[data-id]`).dataset.id;
+      this._renderPopup(id);
+    }
+  }
+
+  _renderPopup(idForPopup) {
+    const activePopup = document.querySelector(`.film-details`);
+    if (activePopup) {
+      activePopup.remove();
+    }
+
+    let filmPopup;
+
+    for (let film of this._films) {
+      if (film.id === idForPopup) {
+        filmPopup = new FilmPopupView(film);
+        render(this._mainContainer, filmPopup, RenderPosition.BEFOREEND);
+        break;
       }
-    };
+    }
 
-    const openPopup = (idForPopup) => {
-      const activePopup = document.querySelector(`.film-details`);
-      if (activePopup) {
-        activePopup.remove();
-      }
+    const filmDetails = document.querySelector(`.film-details`);
 
-      let filmPopup;
+    filmPopup.setClickBtnClose(() => {
+      filmDetails.remove();
+    });
 
-      for (let film of this._films) {
-        if (film.id === idForPopup) {
-          filmPopup = new FilmPopupView(film);
-          render(this._mainContainer, filmPopup, RenderPosition.BEFOREEND);
-          break;
-        }
-      }
-
-      const filmDetails = document.querySelector(`.film-details`);
-
-      filmPopup.setClickBtnClose(() => {
+    document.addEventListener(`keydown`, (evt) => {
+      if (isEscPressed(evt)) {
         filmDetails.remove();
-      });
-
-      document.addEventListener(`keydown`, (evt) => {
-        if (isEscPressed(evt)) {
-          filmDetails.remove();
-        }
-      });
-    };
-
-    this._filmsContainerComponent.setClickPopupHandler(filmCardClickHandler);
+      }
+    });
   }
 
   _renderFilms() {
-    console.log(`this._films`, this._films);
+
     this._renderSort();
     this._renderFilmsContainerComponent();
     this._renderFilmsListComponent();
@@ -223,7 +223,5 @@ export default class FilmsPresenter {
     } else {
       this._renderFilmsListTop();
     }
-
-    this._renderPopup();
   }
 }
