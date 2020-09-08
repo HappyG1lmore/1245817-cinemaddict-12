@@ -59,3 +59,17 @@ export const getDateInComment = (msec) => {
   return moment(maxDate).fromNow();
   // return moment(maxDate).format(`YYYY/MM/DD HH:mm`)
 };
+
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1)
+  ];
+};

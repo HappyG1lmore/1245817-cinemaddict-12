@@ -1,13 +1,12 @@
 import SortView from "../view/site-sorting.js";
 import LoadMoreButtonView from "../view/site-show-more-button.js";
-import FilmCardView from "../view/site-film-card.js";
 import NoFilms from "../view/site-no-films.js";
 import ListContainerTop from "../view/site-additional-section.js";
 import FilmsContainer from "../view/site-films-container.js";
 import FilmsList from "../view/site-films-list.js";
 import FilmPopupView from "../view/site-film-popup.js";
-import {render, RenderPosition} from "../utils/render.js";
-import {isEscPressed} from "../utils/common.js";
+import FilmPresenter from "./film.js";
+import {render, RenderPosition, replace} from "../utils/render.js";
 import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
 
@@ -39,11 +38,12 @@ export default class FilmsPresenter {
     this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
     this._currentSortType = SortType.DEFAULT;
 
-    this._filmsContainerComponent.setClickPopupHandler(this._filmCardClickHandler);
 
     this._filmsListContainerElement = null;
     this._filmListElement = null;
     this._filmsElement = null;
+
+    this._filmPresenter = {};
   }
 
   init(films) {
@@ -84,7 +84,6 @@ export default class FilmsPresenter {
     this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
   }
 
-
   _renderSort() {
     render(this._mainContainer, this._sortComponent, RenderPosition.BEFOREEND);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
@@ -96,11 +95,6 @@ export default class FilmsPresenter {
 
   _renderFilmsListComponent() {
     render(this._filmsContainerComponent, this._filmsListComponent, RenderPosition.AFTERBEGIN);
-  }
-
-  _renderFilm(filmListElement, film) {
-    this._filmCardComponent = new FilmCardView(film);
-    render(filmListElement, this._filmCardComponent, RenderPosition.BEFOREEND);
   }
 
   _renderFilmsListTop() {
@@ -131,11 +125,13 @@ export default class FilmsPresenter {
     const topRatedFilms = preparesTopRated();
 
     for (let i = 0; i < topRatedFilms.length; i++) {
-      this._renderFilm(filmsListTopRatedContainer, topRatedFilms[i]);
+      let filmCardTopRated = new FilmPresenter(filmsListTopRatedContainer);
+      filmCardTopRated.init(topRatedFilms[i]);
     }
 
     for (let i = 0; i < topCommentedFilms.length; i++) {
-      this._renderFilm(filmsListTopCommentedContainer, topCommentedFilms[i]);
+      let filmCardTopComment = new FilmPresenter(filmsListTopCommentedContainer);
+      filmCardTopComment.init(topCommentedFilms[i]);
     }
   }
 
@@ -146,7 +142,7 @@ export default class FilmsPresenter {
   _renderCards() {
     this._films
     .slice(0, this._renderedFilmsCount)
-    .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
+    .forEach((film) => new FilmPresenter(this._filmsListContainerElement).init(film));
 
     if (this._films.length > this._renderedFilmsCount) {
       let renderedFilmCards = this._renderedFilmsCount;
@@ -155,7 +151,7 @@ export default class FilmsPresenter {
       this._loadMoreButtonComponent.setClickHandler(() => {
         this._films
           .slice(renderedFilmCards, (renderedFilmCards + this._renderedFilmsCount))
-          .forEach((film) => this._renderFilm(this._filmsListContainerElement, film));
+          .forEach((film) => new FilmPresenter(this._filmsListContainerElement).init(film));
 
         renderedFilmCards += this._renderedFilmsCount;
 
@@ -168,42 +164,8 @@ export default class FilmsPresenter {
   }
 
   _filmCardClickHandler(evt) {
-    const target = evt.target;
-    if (target.classList.contains(`film-card__poster`) ||
-      target.classList.contains(`film-card__title`) ||
-      target.classList.contains(`film-card__comments`)) {
-      const id = evt.target.closest(`[data-id]`).dataset.id;
-      this._renderPopup(id);
-    }
-  }
-
-  _renderPopup(idForPopup) {
-    const activePopup = document.querySelector(`.film-details`);
-    if (activePopup) {
-      activePopup.remove();
-    }
-
-    let filmPopup;
-
-    for (let film of this._films) {
-      if (film.id === idForPopup) {
-        filmPopup = new FilmPopupView(film);
-        render(this._mainContainer, filmPopup, RenderPosition.BEFOREEND);
-        break;
-      }
-    }
-
-    const filmDetails = document.querySelector(`.film-details`);
-
-    filmPopup.setClickBtnClose(() => {
-      filmDetails.remove();
-    });
-
-    document.addEventListener(`keydown`, (evt) => {
-      if (isEscPressed(evt)) {
-        filmDetails.remove();
-      }
-    });
+    const id = evt.target(`[data-id]`).dataset.id;
+    this._renderPopup(id);
   }
 
   _renderFilms() {

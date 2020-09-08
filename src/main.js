@@ -11,7 +11,7 @@ import {render, RenderPosition} from "./utils/render.js";
 const FILMS_СOUNT = 8;
 
 const listFilms = new Array(FILMS_СOUNT).fill().map(generateFilm);
-console.log(listFilms)
+console.log(listFilms);
 
 const headerElement = document.querySelector(`.header`);
 render(headerElement, new SiteUserRankView().getElement(), RenderPosition.BEFOREEND);
