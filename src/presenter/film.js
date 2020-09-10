@@ -24,27 +24,39 @@ export default class Film {
 
     this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
 
+    this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
+    this._handleWatchedClick = this._handleWatchedClick.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
   init(film) {
     const prevFilmComponent = this._filmCardComponent;
-
+    const prevPopupComponent = this._popupComponent;
 
     this._film = film;
     this._filmCardComponent = new FilmCardView(film);
     this._filmCardComponent.setClickPopupHandler(this._filmCardClickHandler);
+    this._filmCardComponent.setClickWatchlistHandler(this._handleWatchlistClick);
+    this._filmCardComponent.setClickWatchedHandler(this._handleWatchedClick);
+    this._filmCardComponent.setClickFavoriteHandler(this._handleFavoriteClick);
+
+    this._popupComponent = new FilmPopupView(this._film);
 
     if (prevFilmComponent === null) {
       render(this._filmContainer, this._filmCardComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    if (this._filmContainer.getElement().contains(prevFilmComponent.getElement())) {
+    if (this._filmContainer.contains(prevFilmComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmComponent);
     }
 
-    remove(prevFilmComponent);
+    if (this._mainContainer.contains(prevPopupComponent.getElement())) {
+      replace(this._popupComponent, prevPopupComponent);
+    }
 
+    remove(prevFilmComponent);
+    remove(prevPopupComponent);
   }
 
   _filmCardClickHandler(evt) {
@@ -57,24 +69,65 @@ export default class Film {
   }
 
   _renderPopup() {
+    //в учебном коммите 6.5 пропустил _handleForSubmit.
+    //это похоже на наш попап. Туда должны передавать обновленный фильм?
+     //Уточнить/узнать у наставника когда упрусь в обновление данных в попапе
     const activePopup = document.querySelector(`.film-details`);
     if (activePopup) {
       activePopup.remove();
     }
 
-    this._popupComponent = new FilmPopupView(this._film);
     render(this._mainContainer, this._popupComponent, RenderPosition.BEFOREEND);
 
-    const filmDetails = document.querySelector(`.film-details`);
-
     this._popupComponent.setClickBtnClose(() => {
-      filmDetails.remove();
+      remove(this._popupComponent);
     });
 
     document.addEventListener(`keydown`, (evt) => {
       if (isEscPressed(evt)) {
-        filmDetails.remove();
+        remove(this._popupComponent);
       }
     });
+  }
+
+  destroy() {
+    remove(this._filmCardComponent);
+    remove(this._popupComponent);
+  }
+
+  _handleWatchlistClick() {
+    this._changeData(
+        Object.assign(
+            {},
+            this._film,
+            {
+              isWatchlist: !this._film.isWatchlist
+            }
+        )
+    );
+  }
+
+  _handleWatchedClick() {
+    this._changeData(
+        Object.assign(
+            {},
+            this._film,
+            {
+              isWatched: !this._film.isWatched
+            }
+        )
+    );
+  }
+
+  _handleFavoriteClick() {
+    this._changeData(
+        Object.assign(
+            {},
+            this._film,
+            {
+              isFavorite: !this._film.isFavorite
+            }
+        )
+    );
   }
 }

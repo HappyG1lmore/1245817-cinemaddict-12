@@ -180,7 +180,7 @@ export default class FilmPopup extends AbstractView {
 
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.click(this._film);
   }
 
   setClickBtnClose(callback) {
