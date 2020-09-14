@@ -97,7 +97,6 @@ export default class FilmCard extends AbstractView {
     this._callback.favoriteClick();
   }
 
-
   setClickPopupHandler(callback) {
     this._callback.click = callback;
     this.getElement().addEventListener(`click`, this._clickHandler);
@@ -118,4 +117,3 @@ export default class FilmCard extends AbstractView {
     this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, this._clickFavoriteHandler);
   }
 }
-

@@ -34,7 +34,8 @@ export default class Film {
     const prevPopupComponent = this._popupComponent;
 
     this._film = film;
-    this._filmCardComponent = new FilmCardView(film);
+
+    this._filmCardComponent = new FilmCardView(this._film);
     this._filmCardComponent.setClickPopupHandler(this._filmCardClickHandler);
     this._filmCardComponent.setClickWatchlistHandler(this._handleWatchlistClick);
     this._filmCardComponent.setClickWatchedHandler(this._handleWatchedClick);
@@ -69,9 +70,6 @@ export default class Film {
   }
 
   _renderPopup() {
-    //в учебном коммите 6.5 пропустил _handleForSubmit.
-    //это похоже на наш попап. Туда должны передавать обновленный фильм?
-     //Уточнить/узнать у наставника когда упрусь в обновление данных в попапе
     const activePopup = document.querySelector(`.film-details`);
     if (activePopup) {
       activePopup.remove();
@@ -80,19 +78,44 @@ export default class Film {
     render(this._mainContainer, this._popupComponent, RenderPosition.BEFOREEND);
 
     this._popupComponent.setClickBtnClose(() => {
-      remove(this._popupComponent);
+      this._onCloseBtnClick(this._film);
     });
 
     document.addEventListener(`keydown`, (evt) => {
       if (isEscPressed(evt)) {
-        remove(this._popupComponent);
+        this._onEscKeyDown(this._film);
       }
     });
+
+    this._resetPopups();
+    this._mode = Mode.DETAILS;
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._closePopup();
+      this._changeData(this._filmCard);
+    }
   }
 
   destroy() {
     remove(this._filmCardComponent);
     remove(this._popupComponent);
+  }
+
+  _onEscKeyDown(film) {
+    this._closePopup();
+    this._changeData(film);
+  }
+
+  _onCloseBtnClick(film) {
+    this._closePopup();
+    this._changeData(film);
+  }
+
+  _closePopup() {
+    remove(this._popupComponent);
+    this._mode = Mode.DEFAULT;
   }
 
   _handleWatchlistClick() {
