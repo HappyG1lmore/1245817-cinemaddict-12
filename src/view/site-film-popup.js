@@ -2,6 +2,8 @@ import {getDateInMS} from "../utils/common.js";
 import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
+import {isEscPressed} from "../utils/common.js";
+import filmPresenter from "../presenter/film.js";
 
 const createPopupTemplate = (film) => {
   const {
@@ -160,6 +162,7 @@ export default class FilmPopup extends SmartView {
     super();
     this._film = film;
     this._clickHandler = this._clickHandler.bind(this);
+    this._keyDownHandler = this._keyDownHandler.bind(this);
 
     this._isWatchListToggleHandler = this._isWatchListToggleHandler.bind(this);
     this._isWatchedToggleHandler = this._isWatchedToggleHandler.bind(this);
@@ -184,9 +187,8 @@ export default class FilmPopup extends SmartView {
   _renderComments() {
     const {comments} = this._film;
     const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
-    console.log('commentsContainer', commentsContainer)
     comments.map((comment) => {
-       return render(commentsContainer, new CommentView(comment), RenderPosition.AFTERBEGIN);
+      return render(commentsContainer, new CommentView(comment), RenderPosition.AFTERBEGIN);
     });
   }
 
@@ -195,24 +197,33 @@ export default class FilmPopup extends SmartView {
     this._callback.click(this._film);
   }
 
+  _keyDownHandler(evt) {
+    evt.preventDefault();
+    if (isEscPressed(evt)) {
+      this._callback.keydown(this._film);
+    }
+  }
+
   setClickBtnClose(callback) {
     this._callback.click = callback;
     const filmDetailsBtnClose = this.getElement().querySelector(`.film-details__close-btn`);
     filmDetailsBtnClose.addEventListener(`click`, this._clickHandler);
   }
 
+  setEscBtnClose(callback) {
+    this._callback.keydown = callback;
+    document.addEventListener(`keydown`, this._keyDownHandler);
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this.setClickBtnClose(this._callback.click);
+    this.setWatchlistCardClickHandler(this._callback.watchlistClick);
+    this.setFavoriteCardClickHandler(this._callback.favoriteClick);
+    this.setWatchedCardClickHandler(this._callback.watchedClick);
   }
 
   _setInnerHandlers() {
-    this.getElement().querySelector(`.film-details__control-label--watchlist`)
-      .addEventListener(`click`, this._isWatchListToggleHandler);
-    this.getElement().querySelector(`.film-details__control-label--watched`)
-      .addEventListener(`click`, this._isWatchedToggleHandler);
-    this.getElement().querySelector(`.film-details__control-label--favorite`)
-      .addEventListener(`click`, this._isFavoriteToggleHandler);
     this.getElement().querySelector(`.film-details__emoji-list`)
       .addEventListener(`click`, this._selectEmojiHandler);
   }
@@ -221,21 +232,42 @@ export default class FilmPopup extends SmartView {
     evt.preventDefault();
     this.updateData({
       isWatchlist: !this._film.isWatchlist
-    });
+    },
+    false);
+    this._callback.watchlistClick(this.film);
   }
 
   _isWatchedToggleHandler(evt) {
     evt.preventDefault();
     this.updateData({
       isWatched: !this._film.isWatched
-    });
+    },
+    false);
+    this._callback.watchedClick(this.film);
   }
 
   _isFavoriteToggleHandler(evt) {
     evt.preventDefault();
     this.updateData({
       isFavorite: !this._film.isFavorite
-    });
+    },
+    false);
+    this._callback.favoriteClick(this.film);
+  }
+
+  setFavoriteCardClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._isFavoriteToggleHandler);
+  }
+
+  setWatchedCardClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._isWatchedToggleHandler);
+  }
+
+  setWatchlistCardClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._isWatchListToggleHandler);
   }
 
   _selectEmojiHandler(evt) {

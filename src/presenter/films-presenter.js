@@ -6,7 +6,7 @@ import FilmsContainer from "../view/site-films-container.js";
 import FilmsList from "../view/site-films-list.js";
 
 import FilmPresenter from "./film.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import {render, RenderPosition} from "../utils/render.js";
 import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
 import {updateItem} from "../utils/common.js";
@@ -46,21 +46,17 @@ export default class FilmsPresenter {
 
     this._filmPresenter = {};
     this._extraFilmPresenter = {};
-
   }
 
   init(films) {
-
     this._films = films.slice();
     render(this._mainContainer, this._filmsContainerComponent, RenderPosition.AFTERBEGIN);
 
     this._sourcedFilms = films.slice();
     this._renderFilms();
-
   }
 
   _handleFilmChange(updatedFilm) {
-    console.log(updatedFilm);
     this._films = updateItem(this._films, updatedFilm);
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
 
@@ -130,7 +126,6 @@ export default class FilmsPresenter {
   }
 
   _renderFilmsListTop() {
-
     const filmsListTop = this._filmsElement.querySelectorAll(`.films-list--extra`);
     const filmsListTopRatedContainer = filmsListTop[0].querySelector(`.films-list__container`);
     const filmsListTopCommentedContainer = filmsListTop[1].querySelector(`.films-list__container`);
@@ -154,19 +149,12 @@ export default class FilmsPresenter {
     const topCommentedFilms = preparesTopCommented();
     const topRatedFilms = preparesTopRated();
 
-    let filmCardTopRated = null;
-    let filmCardTopComment = null;
-
     for (let i = 0; i < topRatedFilms.length; i++) {
-      filmCardTopRated = new FilmPresenter(filmsListTopRatedContainer, this._handleFilmChange, this._handleResetPopups);
-      filmCardTopRated.init(topRatedFilms[i]);
-      this._extraFilmPresenter[topRatedFilms[i].id] = filmCardTopRated;
+      this._renderFilm(filmsListTopRatedContainer, topRatedFilms[i], this._extraFilmPresenter);
     }
 
     for (let i = 0; i < topCommentedFilms.length; i++) {
-      filmCardTopComment = new FilmPresenter(filmsListTopCommentedContainer, this._handleFilmChange, this._handleResetPopups);
-      filmCardTopComment.init(topCommentedFilms[i]);
-      this._extraFilmPresenter[topCommentedFilms[i].id] = filmCardTopComment;
+      this._renderFilm(filmsListTopCommentedContainer, topCommentedFilms[i], this._extraFilmPresenter);
     }
   }
 
@@ -174,15 +162,17 @@ export default class FilmsPresenter {
     render(this._filmsListContainerElement, this._noFilmsComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderCards() {
+  _renderFilm(container, filmInfo, savePresenter) {
+    let filmCard = new FilmPresenter(container, this._handleFilmChange, this._handleResetPopups);
+    filmCard.init(filmInfo);
+    savePresenter[filmInfo.id] = filmCard;
+  }
 
-    let filmCard = null;
+  _renderCards() {
     this._films
     .slice(0, this._renderedFilmsCount)
     .forEach((film) => {
-      filmCard = new FilmPresenter(this._filmsListContainerElement, this._handleFilmChange, this._handleResetPopups);
-      filmCard.init(film);
-      this._filmPresenter[film.id] = filmCard;
+      this._renderFilm(this._filmsListContainerElement, film, this._filmPresenter);
     });
 
     if (this._films.length > this._renderedFilmsCount) {
@@ -193,9 +183,7 @@ export default class FilmsPresenter {
         this._films
           .slice(renderedFilmCards, (renderedFilmCards + this._renderedFilmsCount))
           .forEach((film) => {
-            filmCard = new FilmPresenter(this._filmsListContainerElement, this._handleFilmChange, this._handleResetPopups);
-            filmCard.init(film);
-            this._filmPresenter[film.id] = filmCard;
+            this._renderFilm(this._filmsListContainerElement, film, this._filmPresenter);
           });
 
         renderedFilmCards += this._renderedFilmsCount;
@@ -204,15 +192,11 @@ export default class FilmsPresenter {
           this._loadMoreButtonComponent.getElement().remove();
           this._loadMoreButtonComponent.removeElement();
         }
-
-        console.log('123', Object.values(this._filmPresenter));
       });
     }
   }
 
   _renderFilms() {
-
-
     this._renderSort();
     this._renderFilmsContainerComponent();
     this._renderFilmsListComponent();
@@ -230,7 +214,6 @@ export default class FilmsPresenter {
       render(this._filmsElement, this._listContainerTopCommentComponent, RenderPosition.BEFOREEND);
       this._renderFilmsListTop();
     }
-    console.log('123', Object.values(this._filmPresenter));
   }
 }
 
