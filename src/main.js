@@ -16,7 +16,7 @@ console.log(listFilms);
 const headerElement = document.querySelector(`.header`);
 render(headerElement, new SiteUserRankView().getElement(), RenderPosition.BEFOREEND);
 
-export const mainElement = document.querySelector(`.main`);
+const mainElement = document.querySelector(`.main`);
 
 const filters = generateFilter(listFilms);
 render(mainElement, new FilterView(filters), RenderPosition.AFTERBEGIN);

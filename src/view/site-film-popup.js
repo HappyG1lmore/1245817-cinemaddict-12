@@ -3,7 +3,6 @@ import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
 import {isEscPressed} from "../utils/common.js";
-import filmPresenter from "../presenter/film.js";
 
 const createPopupTemplate = (film) => {
   const {

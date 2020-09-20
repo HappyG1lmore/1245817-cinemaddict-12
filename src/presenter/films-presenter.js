@@ -16,7 +16,6 @@ const FILMS_COUNT_MAX_TOP = 2;
 
 export default class FilmsPresenter {
   constructor(mainContainer) {
-
     this._mainContainer = mainContainer;
 
     this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
@@ -163,7 +162,7 @@ export default class FilmsPresenter {
   }
 
   _renderFilm(container, filmInfo, savePresenter) {
-    let filmCard = new FilmPresenter(container, this._handleFilmChange, this._handleResetPopups);
+    let filmCard = new FilmPresenter(container, this._handleFilmChange, this._handleResetPopups, this._mainContainer);
     filmCard.init(filmInfo);
     savePresenter[filmInfo.id] = filmCard;
   }

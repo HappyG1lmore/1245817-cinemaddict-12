@@ -1,10 +1,9 @@
 import FilmPopupView from "../view/site-film-popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {mainElement} from "../main.js";
 
 export default class PopupPresenter {
-  constructor(changeData, resetPopups) {
-    this._mainContainer = mainElement;
+  constructor(mainContainer, changeData, resetPopups) {
+    this._mainContainer = mainContainer;
     this._changeData = changeData;
     this._resetPopups = resetPopups;
 

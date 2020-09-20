@@ -80,6 +80,7 @@ export default class FilmCard extends AbstractView {
   _clickHandler(evt) {
     evt.preventDefault();
     this._callback.click(evt);
+    this.getElement().removeEventListener(`click`, this._clickHandler);
   }
 
   _clickWatchlistHandler(evt) {

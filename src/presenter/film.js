@@ -1,7 +1,6 @@
 
 import FilmCardView from "../view/site-film-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {mainElement} from "../main.js";
 import PopupPresenter from "../presenter/popup.js";
 
 const Mode = {
@@ -10,8 +9,8 @@ const Mode = {
 };
 
 export default class Film {
-  constructor(filmContainer, changeData, resetPopups) {
-    this._mainContainer = mainElement;
+  constructor(filmContainer, changeData, resetPopups, mainContainer) {
+    this._mainContainer = mainContainer;
     this._filmContainer = filmContainer;
     this._changeData = changeData;
     this._resetPopups = resetPopups;
@@ -57,12 +56,11 @@ export default class Film {
   }
 
   _renderPopup() {
-    this._popupPresenter = new PopupPresenter(this._changeData, this._resetPopups);
+    this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData, this._resetPopups);
     this._popupPresenter.init(this._film);
   }
 
   _filmCardClickHandler(evt) {
-
     const target = evt.target;
     if (target.classList.contains(`film-card__poster`) ||
       target.classList.contains(`film-card__title`) ||
