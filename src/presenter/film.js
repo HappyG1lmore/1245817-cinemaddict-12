@@ -1,7 +1,7 @@
 import FilmCardView from "../view/site-film-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import PopupPresenter from "../presenter/popup.js";
-import {Mode, UpdateType} from "../constant";
+import {Mode, UpdateType, UserAction} from "../constant";
 import CommentsModel from "../model/comments.js";
 
 export default class Film {
@@ -76,7 +76,9 @@ export default class Film {
   }
 
   _handleWatchlistClick() {
+    this._resetPopups();
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.MINOR,
         Object.assign(
             {},
@@ -89,7 +91,9 @@ export default class Film {
   }
 
   _handleWatchedClick() {
+    this._resetPopups();
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.MINOR,
         Object.assign(
             {},
@@ -102,7 +106,9 @@ export default class Film {
   }
 
   _handleFavoriteClick() {
+    this._resetPopups();
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.MINOR,
         Object.assign(
             {},
@@ -116,6 +122,7 @@ export default class Film {
 
   _handleCommentsEvent() {
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.PATCH,
         Object.assign(
             {},

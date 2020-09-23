@@ -1,11 +1,11 @@
-import FilterView from "./view/site-menu.js";
 import SiteUserRankView from "./view/site-user-rank.js";
 import StatisticsView from "./view/site-footer-statistics.js";
 import FilmsPresenter from "./presenter/films-presenter.js";
 import FilmsModel from "./model/films.js";
+import FilterModel from "./model/filter.js";
+import FilterPresenter from "./presenter/filter.js";
 
 import {generateFilm} from "./mock/film.js";
-import {generateFilter} from "./mock/filter.js";
 
 import {render, RenderPosition} from "./utils/render.js";
 
@@ -18,13 +18,16 @@ render(headerElement, new SiteUserRankView().getElement(), RenderPosition.BEFORE
 
 const mainElement = document.querySelector(`.main`);
 
-const filters = generateFilter(listFilms);
-render(mainElement, new FilterView(filters), RenderPosition.AFTERBEGIN);
-
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(listFilms);
 
-const filmsPresenter = new FilmsPresenter(mainElement, filmsModel);
+const countWatched = listFilms.filter((film) => film.isWatched === true).length;
+const filterModel = new FilterModel();
+
+const filmsPresenter = new FilmsPresenter(mainElement, filmsModel, filterModel);
+
+const filterPresenter = new FilterPresenter(mainElement, filterModel, filmsModel);
+filterPresenter.init()
 filmsPresenter.init();
 
 const footerElement = document.querySelector(`.footer`);

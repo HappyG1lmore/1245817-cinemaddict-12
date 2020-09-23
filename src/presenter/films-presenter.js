@@ -4,18 +4,18 @@ import NoFilms from "../view/site-no-films.js";
 import ListContainerTop from "../view/site-additional-section.js";
 import FilmsContainer from "../view/site-films-container.js";
 import FilmsList from "../view/site-films-list.js";
-
+import {filter} from "../utils/filter.js";
 import FilmPresenter from "./film.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
-import {FILMS_СOUNT_PER_STEP, FILMS_COUNT_MAX_TOP, UpdateType} from "../constant";
+import {FILMS_СOUNT_PER_STEP, FILMS_COUNT_MAX_TOP, UpdateType, UserAction} from "../constant";
 
 export default class FilmsPresenter {
-  constructor(mainContainer, filmsModel) {
+  constructor(mainContainer, filmsModel, filterModel) {
     this._mainContainer = mainContainer;
     this._filmsModel = filmsModel;
-
+    this._filterModel = filterModel;
     this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
     this._renderedMaxTopCount = FILMS_COUNT_MAX_TOP;
 
@@ -49,6 +49,7 @@ export default class FilmsPresenter {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleResetPopups = this._handleResetPopups.bind(this);
     this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -57,15 +58,18 @@ export default class FilmsPresenter {
   }
 
   _getFilms() {
+    const filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.getFilms();
+    const filtredFilms = filter[filterType](films);
+
     switch (this._currentSortType) {
       case SortType.DATE:
-        debugger
-        return this._filmsModel.getFilms().slice().sort(sortFilmsDate);
+        return filtredFilms.sort(sortFilmsDate);
       case SortType.RATING:
-        return this._filmsModel.getFilms().slice().sort(sortFilmsRating);
+        return filtredFilms.sort(sortFilmsRating);
     }
 
-    return this._filmsModel.getFilms();
+    return filtredFilms;
   }
 
   _handleResetPopups() {
@@ -89,8 +93,28 @@ export default class FilmsPresenter {
     this._renderFilms();
   }
 
-  _handleViewAction(updateType, update) {
-    this._filmsModel.updateFilm(updateType, update);
+  _renderSort() {
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+
+    this._sortComponent = new SortView(this._currentSortType);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    render(this._mainContainer, this._sortComponent, RenderPosition.BEFOREEND);
+  }
+
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
+      case UserAction.ADD_COMMENT:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._moviesModel.updateFilm(updateType, update);
+        break;
+    }
   }
 
   _handleModelEvent(updateType, item) {
@@ -112,7 +136,7 @@ export default class FilmsPresenter {
         this._renderFilms();
         break;
       case UpdateType.MAJOR:
-        this._clearFilmList({resetRenderedCardCount: true, resetSortType: true});
+        this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilms();
         break;
     }
@@ -152,16 +176,6 @@ export default class FilmsPresenter {
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
-  }
-
-  _renderSort() {
-    if (this._sortComponent !== null) {
-      this._sortComponent = null;
-    }
-
-    this._sortComponent = new SortView(this._currentSortType);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-    render(this._mainContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
   _renderFilmsContainerComponent() {

@@ -1,6 +1,6 @@
 import FilmPopupView from "../view/site-film-popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {UpdateType} from "../constant";
+import {UpdateType, UserAction} from "../constant";
 
 export default class PopupPresenter {
   constructor(mainContainer, changeData, resetPopups) {
@@ -42,8 +42,6 @@ export default class PopupPresenter {
     }
 
     if (prevPopupComponent) {
-console.log('PopupComponent', this._popupComponent)
-console.log('prevPopupComponent', prevPopupComponent)
 
       replace(this._popupComponent, prevPopupComponent);
 
@@ -59,6 +57,7 @@ console.log('prevPopupComponent', prevPopupComponent)
 
   _handleWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.PATCH,
         Object.assign(
             {},
@@ -72,6 +71,7 @@ console.log('prevPopupComponent', prevPopupComponent)
 
   _handleWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.PATCH,
         Object.assign(
             {},
@@ -85,6 +85,7 @@ console.log('prevPopupComponent', prevPopupComponent)
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
         UpdateType.PATCH,
         Object.assign(
             {},
@@ -105,12 +106,12 @@ console.log('prevPopupComponent', prevPopupComponent)
   }
 
   _onEscKeyDown(film) {
-    this._changeData(UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
     this.destroy();
   }
 
   _onCloseBtnClick(film) {
-    this._changeData(UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
     this.destroy();
   }
 }

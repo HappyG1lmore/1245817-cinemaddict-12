@@ -202,7 +202,6 @@ export default class FilmPopup extends SmartView {
   }
 
   _keyDownHandler(evt) {
-    evt.preventDefault();
     if (isEscPressed(evt)) {
       this._callback.keydown(this._film);
     }
@@ -280,14 +279,18 @@ export default class FilmPopup extends SmartView {
     if (evt.target.tagName === `INPUT`) {
       const emoji = evt.target.value;
       const emojiContainer = this.getElement().querySelector(`.film-details__add-emoji-label`);
-      emojiContainer.innerHTML = `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji">`;
+
+      emojiContainer.innerHTML = `<img class="film-details__add-emoji-img" src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji" data-emoji="${emoji}">`;
+
     }
   }
 
   _addCommentHandler(evt) {
     if (isEnterPressed(evt) && (evt.ctrlKey || evt.metaKey)) {
+
       const message = this.getElement().querySelector(`.film-details__comment-input`).value.trim();
       const emoji = this.getElement().querySelector(`.film-details__add-emoji-img`).dataset.emoji;
+
       if (message && emoji) {
         const newComment = {
           text: message,
