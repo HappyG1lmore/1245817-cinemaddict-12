@@ -2,7 +2,9 @@ import {getDateInMS} from "../utils/common.js";
 import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
-import {isEscPressed} from "../utils/common.js";
+import {isEscPressed, isEnterPressed} from "../utils/common.js";
+import {nanoid} from 'nanoid';
+import {getRandomDate} from "../utils/common.js";
 
 const createPopupTemplate = (film) => {
   const {
@@ -157,9 +159,11 @@ const createPopupTemplate = (film) => {
 };
 
 export default class FilmPopup extends SmartView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._film = film;
+    this._comments = comments;
+
     this._clickHandler = this._clickHandler.bind(this);
     this._keyDownHandler = this._keyDownHandler.bind(this);
 
@@ -167,6 +171,8 @@ export default class FilmPopup extends SmartView {
     this._isWatchedToggleHandler = this._isWatchedToggleHandler.bind(this);
     this._isFavoriteToggleHandler = this._isFavoriteToggleHandler.bind(this);
     this._selectEmojiHandler = this._selectEmojiHandler.bind(this);
+    this._addCommentHandler = this._addCommentHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -178,13 +184,12 @@ export default class FilmPopup extends SmartView {
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate().trim());
-      this._renderComments();
+      this._renderComments(this._comments);
     }
     return this._element;
   }
 
-  _renderComments() {
-    const {comments} = this._film;
+  _renderComments(comments) {
     const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
     comments.map((comment) => {
       return render(commentsContainer, new CommentView(comment), RenderPosition.AFTERBEGIN);
@@ -220,6 +225,8 @@ export default class FilmPopup extends SmartView {
     this.setWatchlistCardClickHandler(this._callback.watchlistClick);
     this.setFavoriteCardClickHandler(this._callback.favoriteClick);
     this.setWatchedCardClickHandler(this._callback.watchedClick);
+    this.setDeleteCommentHandler(this._callback.deleteClick);
+    this.setAddCommentHandler(this._callback.addComment);
   }
 
   _setInnerHandlers() {
@@ -275,6 +282,41 @@ export default class FilmPopup extends SmartView {
       const emojiContainer = this.getElement().querySelector(`.film-details__add-emoji-label`);
       emojiContainer.innerHTML = `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji">`;
     }
+  }
+
+  _addCommentHandler(evt) {
+    if (isEnterPressed(evt) && (evt.ctrlKey || evt.metaKey)) {
+      const message = this.getElement().querySelector(`.film-details__comment-input`).value.trim();
+      const emoji = this.getElement().querySelector(`.film-details__add-emoji-img`).dataset.emoji;
+      if (message && emoji) {
+        const newComment = {
+          text: message,
+          emotion: emoji,
+          author: `User`,
+          date: getRandomDate(),
+          id: nanoid(),
+        };
+        this._callback.addComment(newComment);
+      }
+    }
+  }
+
+  setAddCommentHandler(callback) {
+    this._callback.addComment = callback;
+    this.getElement().addEventListener(`keydown`, this._addCommentHandler);
+  }
+
+  setDeleteCommentHandler(callback) {
+    this._callback.deleteClick = callback;
+    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    deleteButtons.forEach((button) => button.addEventListener(`click`, this._deleteClickHandler));
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    const currentCommentId = evt.target.closest(`.film-details__comment`).dataset.id;
+    const currentComment = this._comments.filter((comment) => comment.id === currentCommentId);
+    this._callback.deleteClick(currentComment, currentCommentId);
   }
 }
 

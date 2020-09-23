@@ -1,12 +1,8 @@
-
 import FilmCardView from "../view/site-film-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import PopupPresenter from "../presenter/popup.js";
-
-const Mode = {
-  DEFAULT: `DEFAULT`,
-  DETAILS: `DETAILS`
-};
+import {Mode, UpdateType} from "../constant";
+import CommentsModel from "../model/comments.js";
 
 export default class Film {
   constructor(filmContainer, changeData, resetPopups, mainContainer) {
@@ -19,17 +15,21 @@ export default class Film {
 
     this._mode = Mode.DEFAULT;
 
-    this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
+    this._commentsModel = new CommentsModel();
 
+    this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleCommentsEvent = this._handleCommentsEvent.bind(this);
   }
 
   init(film) {
     const prevFilmComponent = this._filmCardComponent;
 
     this._film = film;
+
+    this._commentsModel.addObserver(this._handleCommentsEvent);
 
     this._filmCardComponent = new FilmCardView(this._film);
 
@@ -57,7 +57,7 @@ export default class Film {
 
   _renderPopup() {
     this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData, this._resetPopups);
-    this._popupPresenter.init(this._film);
+    this._popupPresenter.init(this._film, this._commentsModel);
   }
 
   _filmCardClickHandler(evt) {
@@ -77,6 +77,7 @@ export default class Film {
 
   _handleWatchlistClick() {
     this._changeData(
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -89,6 +90,7 @@ export default class Film {
 
   _handleWatchedClick() {
     this._changeData(
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -101,6 +103,7 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -109,5 +112,18 @@ export default class Film {
             }
         )
     );
+  }
+
+  _handleCommentsEvent() {
+    this._changeData(
+        UpdateType.PATCH,
+        Object.assign(
+            {},
+            this._film,
+            {comments: this._commentsModel.getComments()}
+        )
+    );
+
+    this._popupPresenter.init(this._film, this._commentsModel);
   }
 }

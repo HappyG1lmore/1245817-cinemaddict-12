@@ -1,6 +1,7 @@
 import {getRandomArrayItem} from "../utils/common.js";
 import AbstractView from "../abstract.js";
 
+
 const MAX_COMMENT_LENGTH = 140;
 
 const createFilmCardTemplate = (film) => {

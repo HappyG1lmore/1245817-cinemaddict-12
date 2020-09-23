@@ -1,5 +1,6 @@
 import FilmPopupView from "../view/site-film-popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {UpdateType} from "../constant";
 
 export default class PopupPresenter {
   constructor(mainContainer, changeData, resetPopups) {
@@ -15,19 +16,25 @@ export default class PopupPresenter {
 
     this._onCloseBtnClick = this._onCloseBtnClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._handleAddComment = this._handleAddComment.bind(this);
+    this._handleDeleteComment = this._handleDeleteComment.bind(this);
   }
 
-  init(film) {
+  init(film, commentsModel) {
     this._film = film;
+    this._commentsModel = commentsModel;
+    this._commentsModel.setComments(film.comments);
 
     const prevPopupComponent = this._popupComponent;
-    this._popupComponent = new FilmPopupView(this._film);
+    this._popupComponent = new FilmPopupView(this._film, this._commentsModel.getComments());
 
     this._popupComponent.setWatchlistCardClickHandler(this._handleWatchlistClick);
     this._popupComponent.setFavoriteCardClickHandler(this._handleFavoriteClick);
     this._popupComponent.setWatchedCardClickHandler(this._handleWatchedClick);
     this._popupComponent.setClickBtnClose(this._onCloseBtnClick);
     this._popupComponent.setEscBtnClose(this._onEscKeyDown);
+    this._popupComponent.setAddCommentHandler(this._handleAddComment);
+    this._popupComponent.setDeleteCommentHandler(this._handleDeleteComment);
 
     if (prevPopupComponent === null) {
       render(this._mainContainer, this._popupComponent, RenderPosition.BEFOREEND);
@@ -35,7 +42,11 @@ export default class PopupPresenter {
     }
 
     if (prevPopupComponent) {
-      replace(this._PopupComponent, prevPopupComponent);
+console.log('PopupComponent', this._popupComponent)
+console.log('prevPopupComponent', prevPopupComponent)
+
+      replace(this._popupComponent, prevPopupComponent);
+
       return;
     }
 
@@ -48,6 +59,7 @@ export default class PopupPresenter {
 
   _handleWatchlistClick() {
     this._changeData(
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -60,6 +72,7 @@ export default class PopupPresenter {
 
   _handleWatchedClick() {
     this._changeData(
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -72,6 +85,7 @@ export default class PopupPresenter {
 
   _handleFavoriteClick() {
     this._changeData(
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -82,13 +96,21 @@ export default class PopupPresenter {
     );
   }
 
+  _handleAddComment(comment) {
+    this._commentsModel.addComment(UpdateType.MINOR, comment);
+  }
+
+  _handleDeleteComment(comment) {
+    this._commentsModel.deleteComment(UpdateType.MINOR, comment);
+  }
+
   _onEscKeyDown(film) {
-    this._changeData(film);
+    this._changeData(UpdateType.MINOR, film);
     this.destroy();
   }
 
   _onCloseBtnClick(film) {
-    this._changeData(film);
+    this._changeData(UpdateType.MINOR, film);
     this.destroy();
   }
 }
