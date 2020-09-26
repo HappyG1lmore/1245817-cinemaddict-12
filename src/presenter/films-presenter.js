@@ -10,6 +10,7 @@ import {remove, render, RenderPosition} from "../utils/render.js";
 import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
 import {FILMS_СOUNT_PER_STEP, FILMS_COUNT_MAX_TOP, UpdateType, UserAction} from "../constant";
+import StatsPresenter from "./stats-filter";
 
 export default class FilmsPresenter {
   constructor(mainContainer, filmsModel, filterModel) {
@@ -64,11 +65,10 @@ export default class FilmsPresenter {
 
     switch (this._currentSortType) {
       case SortType.DATE:
-        return filtredFilms.sort(sortFilmsDate);
+        return filtredFilms.slice().sort(sortFilmsDate);
       case SortType.RATING:
-        return filtredFilms.sort(sortFilmsRating);
+        return filtredFilms.slice().sort(sortFilmsRating);
     }
-
     return filtredFilms;
   }
 
@@ -136,9 +136,25 @@ export default class FilmsPresenter {
         this._renderFilms();
         break;
       case UpdateType.MAJOR:
+        this._clearStats();
         this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilms();
         break;
+      case UpdateType.STATS:
+        this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
+        this._renderStatistics();
+        break;
+    }
+  }
+
+  _renderStatistics() {
+    this._statsPresenter = new StatsPresenter(this._mainContainer, this._filmsModel.getFilms());
+    this._statsPresenter.init();
+  }
+
+  _clearStats() {
+    if (this._statsPresenter) {
+      this._statsPresenter.destroy();
     }
   }
 

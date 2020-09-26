@@ -11,7 +11,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   );
 };
 
- const createFilterTemplate = (filterItems, currentFilterType) => {
+const createFilterTemplate = (filterItems, currentFilterType) => {
   const filterItemsTemplate = filterItems.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join(``);
 
   return (
@@ -19,12 +19,12 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
     <div class="main-navigation__items">
     ${filterItemsTemplate}
     </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
+    <a href="#stats" class="main-navigation__additional ${currentFilterType === `stats` ? `main-navigation__item--active` : ``}" data-type="stats"">Stats</a>
     </nav>`
   );
 };
 
- export default class Filter extends AbstractView {
+export default class Filter extends AbstractView {
   constructor(filters, currentFilterType) {
     super();
     this._filters = filters;

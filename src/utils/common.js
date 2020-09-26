@@ -56,3 +56,15 @@ export const getDateInComment = (msec) => {
   return moment(maxDate).fromNow();
   // return moment(maxDate).format(`YYYY/MM/DD HH:mm`)
 };
+
+export const getRating = (films) => {
+  let rating = null;
+  if (films > 0 && films <= 10) {
+    rating = `novice`;
+  } else if (films >= 11 && films <= 20) {
+    rating = `fan`;
+  } else if (films >= 21) {
+    films = `movie buff`;
+  }
+  return rating;
+};

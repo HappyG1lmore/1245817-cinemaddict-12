@@ -124,5 +124,6 @@ export const generateFilm = () => {
     isWatchlist: getRandomBoolean(),
     isWatched: getRandomBoolean(),
     isFavorite: getRandomBoolean(),
+    whenWatched: getRandomDate(),
   };
 };

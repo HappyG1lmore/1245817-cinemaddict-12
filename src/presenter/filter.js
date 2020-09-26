@@ -23,7 +23,6 @@ export default class Filter {
     this._currentFilter = this._filterModel.getFilter();
 
     const filters = this._getFilters();
-
     const prevFilterComponent = this._filterComponent;
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
@@ -46,7 +45,10 @@ export default class Filter {
     if (this._currentFilter === filterType) {
       return;
     }
-
+    if (filterType === `stats`) {
+      this._filterModel.setFilter(UpdateType.STATS, filterType);
+      return;
+    }
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
@@ -54,7 +56,6 @@ export default class Filter {
     const films = this._filmsModel.getFilms();
 
     return [
-
       {
         type: FilterType.ALL,
         name: `All movies`,
