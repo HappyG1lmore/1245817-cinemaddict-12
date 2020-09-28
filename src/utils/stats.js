@@ -8,7 +8,7 @@ export const sortGenres = (films) => {
   allGenres.forEach((genre) => {
     numberWatchedGenres[genre] = numberWatchedGenres[genre] + 1 || 1;
   });
-  return numberWatchedGenres; 
+  return numberWatchedGenres;
 };
 
 export const getTopGenre = (films) => {
