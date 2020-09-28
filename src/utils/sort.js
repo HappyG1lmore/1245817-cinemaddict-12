@@ -1,17 +1,7 @@
-export const sortFilmsRating = (films) => {
-  const filmsSortRatingArray = films.slice();
-  filmsSortRatingArray.sort(function (a, b) {
-    return b.rating - a.rating;
-  });
-
-  return filmsSortRatingArray;
+export const sortFilmsDate = (filmA, filmB) => {
+  return new Date(filmB.date) - new Date(filmA.date);
 };
 
-export const sortFilmsDate = (films) => {
-  const filmsSortDateArray = films.slice();
-  filmsSortDateArray.sort(function (a, b) {
-    return b.date - a.date;
-  });
-
-  return filmsSortDateArray;
+export const sortFilmsRating = (filmA, filmB) => {
+  return filmB.rating - filmA.rating;
 };

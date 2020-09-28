@@ -1,8 +1,5 @@
 import moment from "moment";
-
-export const ESC_KEYCODE = 27;
-export const ENTER_KEYCODE = 13;
-export const MOUSE_LBUTTON_KEYCODE = 0;
+import {ESC_KEYCODE, ENTER_KEYCODE, MOUSE_LBUTTON_KEYCODE} from "../constant";
 
 export const isEnterPressed = function (evt) {
   return evt.keyCode === ENTER_KEYCODE;
@@ -58,4 +55,16 @@ export const getDateInComment = (msec) => {
   const maxDate = new Date(msec);
   return moment(maxDate).fromNow();
   // return moment(maxDate).format(`YYYY/MM/DD HH:mm`)
+};
+
+export const getRating = (films) => {
+  let rating = ``;
+  if (films > 0 && films <= 10) {
+    rating = `Novice`;
+  } else if (films >= 11 && films <= 20) {
+    rating = `Fan`;
+  } else if (films >= 21) {
+    films = `Movie buff`;
+  }
+  return rating;
 };

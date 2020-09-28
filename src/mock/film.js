@@ -95,6 +95,7 @@ const createComment = function (amount) {
       emotion: getRandomArrayItem(EMOTIONS),
       autor: getRandomArrayItem(NAMES),
       date: getRandomDate(),
+      id: nanoid(),
     });
   }
 
@@ -123,9 +124,6 @@ export const generateFilm = () => {
     isWatchlist: getRandomBoolean(),
     isWatched: getRandomBoolean(),
     isFavorite: getRandomBoolean(),
+    whenWatched: getRandomDate(),
   };
 };
-
-
-// Object.freeze втф
-
