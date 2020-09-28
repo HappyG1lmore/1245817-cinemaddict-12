@@ -9,7 +9,7 @@ import moment from "moment";
 const BAR_HEIGHT = 50;
 
 const Filters = {
-  ALL: `all-time`,
+  ALL: `all`,
   TODAY: `today`,
   MONTH: `month`,
   WEEK: `week`,
@@ -24,7 +24,7 @@ const createTotalDurationTemplate = (films) => {
     return acc + film.runtime.hours;
   }, 0);
 
-  const hours = Math.floor(totalHours + (totalMinutes/60));
+  const hours = Math.floor(totalHours + (totalMinutes / 60));
   const minutes = totalMinutes % 60;
 
   return (

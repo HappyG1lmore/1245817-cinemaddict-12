@@ -58,13 +58,13 @@ export const getDateInComment = (msec) => {
 };
 
 export const getRating = (films) => {
-  let rating = null;
+  let rating = ``;
   if (films > 0 && films <= 10) {
-    rating = `novice`;
+    rating = `Novice`;
   } else if (films >= 11 && films <= 20) {
-    rating = `fan`;
+    rating = `Fan`;
   } else if (films >= 21) {
-    films = `movie buff`;
+    films = `Movie buff`;
   }
   return rating;
 };
