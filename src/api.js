@@ -42,12 +42,12 @@ export default class Api {
 
   addComment(details) {
     return this._load({
-      url: `comments/${details.id}`,
+      url: `comments/${details.film.id}`,
       method: Method.POST,
       body: JSON.stringify({
-        comment: details.comments.comment,
-        date: details.comments.date,
-        emotion: details.comments.emotion,
+        comment: details.comment.text,
+        date: details.comment.date,
+        emotion: details.comment.emotion,
       }),
       headers: new Headers({"Content-Type": `application/json`})
     })

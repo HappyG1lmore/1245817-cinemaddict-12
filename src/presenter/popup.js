@@ -6,8 +6,6 @@ export default class PopupPresenter {
   constructor(mainContainer, changeData, resetPopups, api) {
     this._mainContainer = mainContainer;
     this._changeData = changeData;
-    this._resetPopups = resetPopups;
-
     this._popupComponent = null;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -43,9 +41,7 @@ export default class PopupPresenter {
     }
 
     if (prevPopupComponent) {
-
       replace(this._popupComponent, prevPopupComponent);
-
       return;
     }
 
@@ -98,21 +94,21 @@ export default class PopupPresenter {
     );
   }
 
-  _handleAddComment(comment) {
-    this._commentsModel.addComment(UpdateType.MINOR, comment);
+  _handleAddComment(film, comment) {
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.PATCH, {film, comment});
   }
 
-  _handleDeleteComment(comment) {
-    this._commentsModel.deleteComment(UpdateType.MINOR, comment);
+  _handleDeleteComment(film, commentId) {
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.PATCH, {film, commentId});
   }
 
   _onEscKeyDown(film) {
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM_MODEL, UpdateType.MINOR, film);
     this.destroy();
   }
 
   _onCloseBtnClick(film) {
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM_MODEL, UpdateType.MINOR, film);
     this.destroy();
   }
 }

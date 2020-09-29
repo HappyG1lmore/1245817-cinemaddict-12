@@ -42,6 +42,10 @@ export default class Film {
       return;
     }
 
+    if (this._popupPresenter) {
+      this._popupPresenter.init(this._film, this._commentsModel);
+    }
+
     replace(this._filmCardComponent, prevFilmComponent);
 
     remove(prevFilmComponent);
@@ -120,8 +124,9 @@ export default class Film {
   }
 
   _handleCommentsEvent() {
+    /*    console.log(`handling comments event`);
     this._changeData(
-        UserAction.UPDATE_FILM,
+        UserAction.ADD_COMMENT,
         UpdateType.PATCH,
         Object.assign(
             {},
@@ -129,7 +134,6 @@ export default class Film {
             {comments: this._commentsModel.getComments()}
         )
     );
-
-    this._popupPresenter.init(this._film, this._commentsModel);
+    this._popupPresenter.init(this._film, this._commentsModel);  */
   }
 }

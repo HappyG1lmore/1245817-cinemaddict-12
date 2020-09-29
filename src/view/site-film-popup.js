@@ -1,11 +1,9 @@
 import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
-import {isEscPressed, isEnterPressed, getRandomDate, getHoursFromMinutes, getDateInMS} from "../utils/common.js";
-import {nanoid} from 'nanoid';
+import {isEscPressed, isEnterPressed, getHoursFromMinutes, getDateInMS} from "../utils/common.js";
 
 const createPopupTemplate = (film) => {
-
   const {
     poster,
     title,
@@ -51,7 +49,7 @@ const createPopupTemplate = (film) => {
           <div class="film-details__poster">
             <img class="film-details__poster-img" src="${poster}" alt="">
 
-            <p class="film-details__age">${ageRating}</p>
+            <p class="film-details__age">${ageRating}+</p>
           </div>
 
           <div class="film-details__info">
@@ -227,7 +225,7 @@ export default class FilmPopup extends SmartView {
     this.setFavoriteCardClickHandler(this._callback.favoriteClick);
     this.setWatchedCardClickHandler(this._callback.watchedClick);
     this.setDeleteCommentHandler(this._callback.deleteClick);
-    this.setAddCommentHandler(this._callback.addComment);
+    this.setAddCommentHandler(this._callback.addComment, this._film);
   }
 
   _setInnerHandlers() {
@@ -289,19 +287,17 @@ export default class FilmPopup extends SmartView {
 
   _addCommentHandler(evt) {
     if (isEnterPressed(evt) && (evt.ctrlKey || evt.metaKey)) {
-
       const message = this.getElement().querySelector(`.film-details__comment-input`).value.trim();
-      const emoji = this.getElement().querySelector(`.film-details__add-emoji-img`).dataset.emoji;
+      const emojiContainer = this.getElement().querySelector(`.film-details__add-emoji-img`);
+      const emoji = emojiContainer ? emojiContainer.dataset.emoji : `smile`;
 
       if (message && emoji) {
         const newComment = {
           text: message,
           emotion: emoji,
-          author: `User`,
-          date: getRandomDate(),
-          id: nanoid(),
+          date: new Date(),
         };
-        this._callback.addComment(newComment);
+        this._callback.addComment(this._film, newComment);
       }
     }
   }
@@ -320,8 +316,7 @@ export default class FilmPopup extends SmartView {
   _deleteClickHandler(evt) {
     evt.preventDefault();
     const currentCommentId = evt.target.closest(`.film-details__comment`).dataset.id;
-    const currentComment = this._comments.filter((comment) => comment.id === currentCommentId);
-    this._callback.deleteClick(currentComment, currentCommentId);
+    this._callback.deleteClick(this._film, currentCommentId);
   }
 }
 

@@ -4,12 +4,19 @@ import NoFilms from "../view/site-no-films.js";
 import ListContainerTop from "../view/site-additional-section.js";
 import FilmsContainer from "../view/site-films-container.js";
 import FilmsList from "../view/site-films-list.js";
+import FilmsModel from '../model/films';
 import {filter} from "../utils/filter.js";
 import FilmPresenter from "./film.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
-import {FILMS_СOUNT_PER_STEP, FILMS_COUNT_MAX_TOP, UpdateType, UserAction} from "../constant";
+import {
+  DeleteButtonText,
+  FILMS_COUNT_PER_STEP,
+  FILMS_COUNT_MAX_TOP,
+  UpdateType,
+  UserAction
+} from "../constant";
 import StatsPresenter from "./stats-filter";
 import LoadingView from "../view/loading.js";
 
@@ -18,7 +25,7 @@ export default class FilmsPresenter {
     this._mainContainer = mainContainer;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
-    this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
+    this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
     this._renderedMaxTopCount = FILMS_COUNT_MAX_TOP;
     this._commentsModel = commentsModel;
 
@@ -37,7 +44,6 @@ export default class FilmsPresenter {
     this._handleResetPopups = this._handleResetPopups.bind(this);
 
     this._filmsListContainerElement = null;
-    this._filmListElement = null;
     this._filmsElement = null;
     this._filmsListTopRatedContainer = null;
     this._filmsListTopCommentedContainer = null;
@@ -114,16 +120,42 @@ export default class FilmsPresenter {
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
+      case UserAction.UPDATE_FILM_MODEL:
+        this._filmsModel.updateFilm(updateType, update);
+        break;
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilm(updateType, response);
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._filmsModel.updateFilm(updateType, update);
+        const commentInput = document.querySelector(`.film-details__comment-input`);
+        commentInput.setAttribute(`disabled`, true);
+        this._api.addComment(update)
+          .then((response) => {
+            this._commentsModel.addComment(updateType, response);
+            this._filmsModel.updateFilm(updateType, FilmsModel.adaptToClient(response.movie));
+          })
+          .catch(() => {
+            commentInput.removeAttribute(`disabled`);
+            document.querySelector(`.film-details__new-comment`).classList.add(`shake`);
+          });
         break;
       case UserAction.DELETE_COMMENT:
-        this._filmsModel.updateFilm(updateType, update);
+        const deleteButton = document.querySelector(`.film-details__comment-delete[data-comment-id="${update.commentId}"]`);
+        deleteButton.setAttribute(`disabled`, true);
+        deleteButton.textContent = DeleteButtonText.DELETING;
+        this._api.deleteComment(update.commentId)
+          .then(() => {
+            this._commentsModel.deleteComment(updateType, update);
+            update.film.comments.pop();
+            this._filmsModel.updateFilm(updateType, update.film);
+          })
+          .catch(() => {
+            deleteButton.removeAttribute(`disabled`);
+            deleteButton.textContent = DeleteButtonText.DELETE;
+            deleteButton.classList.add(`shake`);
+          });
         break;
     }
   }
@@ -131,7 +163,6 @@ export default class FilmsPresenter {
   _handleModelEvent(updateType, item) {
     switch (updateType) {
       case UpdateType.PATCH:
-
         if (this._filmPresenter[item.id]) {
           this._filmPresenter[item.id].init(item);
         }
@@ -201,7 +232,7 @@ export default class FilmsPresenter {
     remove(this._listContainerTopCommentComponent);
 
     if (resetRenderedFilmCount) {
-      this._renderedFilmsCount = FILMS_СOUNT_PER_STEP;
+      this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
     } else {
       this._renderedFilmsCount = Math.min(filmsCount, this._renderedFilmsCount);
     }
@@ -286,7 +317,7 @@ export default class FilmsPresenter {
 
   _handleShowMoreButton() {
     const filmsCount = this._getFilms().length;
-    const newRenderedFilmsCount = Math.min(filmsCount, this._renderedFilmsCount + FILMS_СOUNT_PER_STEP);
+    const newRenderedFilmsCount = Math.min(filmsCount, this._renderedFilmsCount + FILMS_COUNT_PER_STEP);
     const films = this._getFilms().slice(this._renderedFilmsCount, newRenderedFilmsCount);
 
     this._renderMovies(films);

@@ -15,8 +15,6 @@ const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 
-// const filmsWatched = listFilms.filter((film) => film.isWatched === true).length;
-
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const filmsModel = new FilmsModel();
