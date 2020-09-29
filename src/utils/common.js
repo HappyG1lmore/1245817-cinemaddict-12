@@ -68,3 +68,10 @@ export const getRating = (films) => {
   }
   return rating;
 };
+
+export const getHoursFromMinutes = (minutes) => {
+  return {
+    hours: Math.floor(minutes / 60),
+    minutes: minutes % 60,
+  };
+};

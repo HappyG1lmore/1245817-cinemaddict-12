@@ -6,13 +6,13 @@ export default class Comments extends Observer {
     this._comments = [];
   }
 
-  setComments(comments, isSuccess) {
+  setComments(updateType, comments) {
     this._comments = comments.slice();
-    this.isSuccess = isSuccess;
+    // this._notify(updateType);
   }
 
-  getComments() {
-    return this._comments;
+  getComments(filmId) {
+    return this._comments[filmId];
   }
 
   updateComment(updateType, update) {
@@ -54,29 +54,4 @@ export default class Comments extends Observer {
     this._notify(updateType);
   }
 
-  static adaptToClient(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment,
-        {
-          text: comment.comment,
-        });
-
-    delete adaptedComment.comment;
-
-    return adaptedComment;
-  }
-
-  static adaptToServer(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment, {
-          "comment": comment.text
-        }
-    );
-
-    delete adaptedComment.text;
-
-    return adaptedComment;
-  }
 }

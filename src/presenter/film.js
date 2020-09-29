@@ -2,20 +2,19 @@ import FilmCardView from "../view/site-film-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import PopupPresenter from "../presenter/popup.js";
 import {Mode, UpdateType, UserAction} from "../constant";
-import CommentsModel from "../model/comments.js";
 
 export default class Film {
-  constructor(filmContainer, changeData, resetPopups, mainContainer) {
+  constructor(filmContainer, changeData, resetPopups, mainContainer, api, commentsModel) {
     this._mainContainer = mainContainer;
     this._filmContainer = filmContainer;
     this._changeData = changeData;
     this._resetPopups = resetPopups;
+    this._commentsModel = commentsModel;
+    this._api = api;
 
     this._filmCardComponent = null;
 
     this._mode = Mode.DEFAULT;
-
-    this._commentsModel = new CommentsModel();
 
     this._filmCardClickHandler = this._filmCardClickHandler.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -56,7 +55,7 @@ export default class Film {
   }
 
   _renderPopup() {
-    this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData, this._resetPopups);
+    this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData, this._resetPopups, this._api);
     this._popupPresenter.init(this._film, this._commentsModel);
   }
 

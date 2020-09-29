@@ -1,7 +1,7 @@
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {sortGenres, getTopGenre} from "../utils/stats.js";
-import {getRating} from "../utils/common.js";
+import {getRating, getHoursFromMinutes} from "../utils/common.js";
 import {FilterType} from "../constant.js";
 import SmartView from "./smart.js";
 import moment from "moment";
@@ -18,14 +18,10 @@ const Filters = {
 
 const createTotalDurationTemplate = (films) => {
   const totalMinutes = films.reduce((acc, film) => {
-    return acc + film.runtime.minutes;
-  }, 0);
-  const totalHours = films.reduce((acc, film) => {
-    return acc + film.runtime.hours;
+    return acc + film.runtime;
   }, 0);
 
-  const hours = Math.floor(totalHours + (totalMinutes / 60));
-  const minutes = totalMinutes % 60;
+  const {hours, minutes} = getHoursFromMinutes(totalMinutes);
 
   return (
     `<p class="statistic__item-text">${hours}<span class="statistic__item-description">h</span> ${minutes} <span class="statistic__item-description">m</span></p>`

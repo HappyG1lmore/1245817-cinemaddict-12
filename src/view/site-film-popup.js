@@ -1,20 +1,20 @@
-import {getDateInMS} from "../utils/common.js";
 import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
-import {isEscPressed, isEnterPressed} from "../utils/common.js";
+import {isEscPressed, isEnterPressed, getRandomDate, getHoursFromMinutes, getDateInMS} from "../utils/common.js";
 import {nanoid} from 'nanoid';
-import {getRandomDate} from "../utils/common.js";
 
 const createPopupTemplate = (film) => {
+
   const {
     poster,
     title,
+    alternativeTitle,
     rating,
     actors,
     writers,
     director,
-    runtime: {hours, minutes},
+    runtime,
     genres,
     comments,
     country,
@@ -22,10 +22,12 @@ const createPopupTemplate = (film) => {
     date,
     isWatchlist,
     isWatched,
-    isFavorite
-
+    isFavorite,
+    ageRating
   } = film;
+
   const commentsCount = comments.length;
+  const {hours, minutes} = getHoursFromMinutes(runtime);
 
   const getGenreElements = (array) => {
 
@@ -47,16 +49,16 @@ const createPopupTemplate = (film) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+            <img class="film-details__poster-img" src="${poster}" alt="">
 
-            <p class="film-details__age">18+</p>
+            <p class="film-details__age">${ageRating}</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
                 <h3 class="film-details__title">${title}</h3>
-                <p class="film-details__title-original">Original: ${title}</p>
+                <p class="film-details__title-original">Original: ${alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
@@ -159,7 +161,7 @@ const createPopupTemplate = (film) => {
 };
 
 export default class FilmPopup extends SmartView {
-  constructor(film, comments) {
+  constructor(film, api, comments) {
     super();
     this._film = film;
     this._comments = comments;

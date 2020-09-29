@@ -3,7 +3,7 @@ import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UpdateType, UserAction} from "../constant";
 
 export default class PopupPresenter {
-  constructor(mainContainer, changeData, resetPopups) {
+  constructor(mainContainer, changeData, resetPopups, api) {
     this._mainContainer = mainContainer;
     this._changeData = changeData;
     this._resetPopups = resetPopups;
@@ -18,15 +18,16 @@ export default class PopupPresenter {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleAddComment = this._handleAddComment.bind(this);
     this._handleDeleteComment = this._handleDeleteComment.bind(this);
+
+    this._api = api;
   }
 
   init(film, commentsModel) {
     this._film = film;
     this._commentsModel = commentsModel;
-    this._commentsModel.setComments(film.comments);
 
     const prevPopupComponent = this._popupComponent;
-    this._popupComponent = new FilmPopupView(this._film, this._commentsModel.getComments());
+    this._popupComponent = new FilmPopupView(this._film, this._api, this._commentsModel.getComments(this._film.id));
 
     this._popupComponent.setWatchlistCardClickHandler(this._handleWatchlistClick);
     this._popupComponent.setFavoriteCardClickHandler(this._handleFavoriteClick);

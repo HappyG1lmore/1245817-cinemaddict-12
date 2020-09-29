@@ -22,7 +22,8 @@ export const UpdateType = {
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
   COMMENT: `COMMENT`,
-  STATS: `STATS`
+  STATS: `STATS`,
+  INIT: `INIT`
 };
 
 export const FilterType = {
