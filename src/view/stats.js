@@ -100,29 +100,29 @@ const renderChart = (statisticCtx, films) => {
   });
 };
 
-const createStatisticsTemplate = (films = {}, currentFilter) => {
-
-  const watched = films.filter((film) => film.isWatched);
+const createStatisticsTemplate = (allFilms, filteredFilms = [], currentFilter) => {
+  const watchedAll = allFilms.filter((film) => film.isWatched);
+  const watchedFiltered = filteredFilms.filter((film) => film.isWatched);
   return (
     `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${getRating(watched.length)}</span>
+      <span class="statistic__rank-label">${getRating(watchedAll.length)}</span>
     </p>
     ${createFilterTemplate(currentFilter)}
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">${watched.length} <span class="statistic__item-description">movies</span></p>
+        <p class="statistic__item-text">${watchedFiltered.length} <span class="statistic__item-description">movies</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        ${createTotalDurationTemplate(watched)}
+        ${createTotalDurationTemplate(watchedFiltered)}
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">${getTopGenre(watched)}</p>
+        <p class="statistic__item-text">${getTopGenre(watchedFiltered)}</p>
       </li>
     </ul>
     <div class="statistic__chart-wrap">
@@ -137,26 +137,24 @@ export default class Stats extends SmartView {
     super();
     this._films = films;
     this._currentFilter = currentFilter;
+    this._filteredFilms = this._getFilmsByFilter(films, currentFilter);
     this._setCharts();
-
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._films, this._currentFilter);
+    return createStatisticsTemplate(this._films, this._filteredFilms, this._currentFilter);
   }
   _setCharts() {
     const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
     statisticCtx.height = BAR_HEIGHT * 5;
-    const films = this._getFilmsByFilter(this._films, this._currentFilter);
-    renderChart(statisticCtx, films);
+    renderChart(statisticCtx, this._filteredFilms);
   }
 
   _filterTypeChangeHandler(evt) {
     if (evt.target.tagName !== `INPUT`) {
       return;
     }
-
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.value);
   }
