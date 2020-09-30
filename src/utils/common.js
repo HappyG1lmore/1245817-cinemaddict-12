@@ -64,7 +64,7 @@ export const getRating = (films) => {
   } else if (films >= 11 && films <= 20) {
     rating = `Fan`;
   } else if (films >= 21) {
-    films = `Movie buff`;
+    rating = `Movie buff`;
   }
   return rating;
 };

@@ -2,6 +2,7 @@ import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
 import {isEscPressed, isEnterPressed, getHoursFromMinutes, getDateInMS} from "../utils/common.js";
+import {SHAKE_ANIMATION_CLASSNAME} from "../constant";
 
 const createPopupTemplate = (film) => {
   const {
@@ -159,7 +160,7 @@ const createPopupTemplate = (film) => {
 };
 
 export default class FilmPopup extends SmartView {
-  constructor(film, api, comments) {
+  constructor(film, comments) {
     super();
     this._film = film;
     this._comments = comments;
@@ -235,29 +236,17 @@ export default class FilmPopup extends SmartView {
 
   _isWatchListToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isWatchlist: !this._film.isWatchlist
-    },
-    false);
-    this._callback.watchlistClick(this.film);
+    this._callback.watchlistClick();
   }
 
   _isWatchedToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isWatched: !this._film.isWatched
-    },
-    false);
-    this._callback.watchedClick(this.film);
+    this._callback.watchedClick();
   }
 
   _isFavoriteToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isFavorite: !this._film.isFavorite
-    },
-    false);
-    this._callback.favoriteClick(this.film);
+    this._callback.favoriteClick();
   }
 
   setFavoriteCardClickHandler(callback) {
@@ -287,18 +276,31 @@ export default class FilmPopup extends SmartView {
 
   _addCommentHandler(evt) {
     if (isEnterPressed(evt) && (evt.ctrlKey || evt.metaKey)) {
-      const message = this.getElement().querySelector(`.film-details__comment-input`).value.trim();
-      const emojiContainer = this.getElement().querySelector(`.film-details__add-emoji-img`);
-      const emoji = emojiContainer ? emojiContainer.dataset.emoji : `smile`;
+      const messageInput = this.getElement().querySelector(`.film-details__comment-input`);
+      const messageValue = messageInput.value.trim();
+      const emojiList = this.getElement().querySelector(`.film-details__emoji-list`);
+      const selectedEmoji = this.getElement().querySelector(`.film-details__add-emoji-img`);
 
-      if (message && emoji) {
-        const newComment = {
-          text: message,
-          emotion: emoji,
-          date: new Date(),
-        };
-        this._callback.addComment(this._film, newComment);
+      messageInput.classList.remove(SHAKE_ANIMATION_CLASSNAME);
+      emojiList.classList.remove(SHAKE_ANIMATION_CLASSNAME);
+
+      if (!messageValue) {
+        setTimeout(() => messageInput.classList.add(SHAKE_ANIMATION_CLASSNAME), 0);
+        return;
       }
+
+      if (!selectedEmoji) {
+        setTimeout(() => emojiList.classList.add(SHAKE_ANIMATION_CLASSNAME), 0);
+        return;
+      }
+
+      const newComment = {
+        text: messageValue,
+        emotion: selectedEmoji.dataset.emoji,
+        date: new Date(),
+      };
+
+      this._callback.addComment(this._film, newComment);
     }
   }
 

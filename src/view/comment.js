@@ -19,7 +19,7 @@ const createCommentTemplate = (commentData) => {
     </div>
   </li>`
   );
-}
+};
 
 export default class Comment extends AbstractView {
   constructor(comment) {

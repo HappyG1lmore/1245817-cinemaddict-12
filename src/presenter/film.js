@@ -20,16 +20,12 @@ export default class Film {
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
-    this._handleCommentsEvent = this._handleCommentsEvent.bind(this);
   }
 
   init(film) {
     const prevFilmComponent = this._filmCardComponent;
 
     this._film = film;
-
-    this._commentsModel.addObserver(this._handleCommentsEvent);
-
     this._filmCardComponent = new FilmCardView(this._film);
 
     this._filmCardComponent.setClickPopupHandler(this._filmCardClickHandler);
@@ -59,7 +55,7 @@ export default class Film {
   }
 
   _renderPopup() {
-    this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData, this._resetPopups, this._api);
+    this._popupPresenter = new PopupPresenter(this._mainContainer, this._changeData);
     this._popupPresenter.init(this._film, this._commentsModel);
   }
 
@@ -121,19 +117,5 @@ export default class Film {
             }
         )
     );
-  }
-
-  _handleCommentsEvent() {
-    /*    console.log(`handling comments event`);
-    this._changeData(
-        UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
-        Object.assign(
-            {},
-            this._film,
-            {comments: this._commentsModel.getComments()}
-        )
-    );
-    this._popupPresenter.init(this._film, this._commentsModel);  */
   }
 }

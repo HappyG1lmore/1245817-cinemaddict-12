@@ -12,8 +12,9 @@ import {sortFilmsDate, sortFilmsRating} from "../utils/sort.js";
 import {SortType} from "../view/site-sorting.js";
 import {
   DeleteButtonText,
-  FILMS_COUNT_PER_STEP,
   FILMS_COUNT_MAX_TOP,
+  FILMS_COUNT_PER_STEP,
+  SHAKE_ANIMATION_CLASSNAME,
   UpdateType,
   UserAction
 } from "../constant";
@@ -124,13 +125,21 @@ export default class FilmsPresenter {
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
-        });
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch((e) => {
+            throw e;
+          });
         break;
       case UserAction.ADD_COMMENT:
+        const newCommentContainer = document.querySelector(`.film-details__new-comment`);
         const commentInput = document.querySelector(`.film-details__comment-input`);
+
+        newCommentContainer.classList.remove(SHAKE_ANIMATION_CLASSNAME);
         commentInput.setAttribute(`disabled`, true);
+
         this._api.addComment(update)
           .then((response) => {
             this._commentsModel.addComment(updateType, response);
@@ -138,13 +147,16 @@ export default class FilmsPresenter {
           })
           .catch(() => {
             commentInput.removeAttribute(`disabled`);
-            document.querySelector(`.film-details__new-comment`).classList.add(`shake`);
+            newCommentContainer.classList.add(SHAKE_ANIMATION_CLASSNAME);
           });
         break;
       case UserAction.DELETE_COMMENT:
         const deleteButton = document.querySelector(`.film-details__comment-delete[data-comment-id="${update.commentId}"]`);
+
         deleteButton.setAttribute(`disabled`, true);
+        deleteButton.classList.remove(SHAKE_ANIMATION_CLASSNAME);
         deleteButton.textContent = DeleteButtonText.DELETING;
+
         this._api.deleteComment(update.commentId)
           .then(() => {
             this._commentsModel.deleteComment(updateType, update);
@@ -152,9 +164,9 @@ export default class FilmsPresenter {
             this._filmsModel.updateFilm(updateType, update.film);
           })
           .catch(() => {
+            setTimeout(() => deleteButton.classList.add(SHAKE_ANIMATION_CLASSNAME), 0);
             deleteButton.removeAttribute(`disabled`);
             deleteButton.textContent = DeleteButtonText.DELETE;
-            deleteButton.classList.add(`shake`);
           });
         break;
     }
@@ -291,12 +303,6 @@ export default class FilmsPresenter {
   _renderLoading() {
     render(this._filmsListContainerElement, this._loadingComponent, RenderPosition.BEFOREEND);
   }
-
-  _loadingCompleted() {
-    this._isLoading = false;
-    remove(this._loadingComponent);
-  }
-
 
   _renderNoFilm() {
     render(this._filmsListContainerElement, this._noFilmsComponent, RenderPosition.BEFOREEND);
