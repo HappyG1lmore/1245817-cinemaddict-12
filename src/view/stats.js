@@ -1,31 +1,19 @@
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {sortGenres, getTopGenre} from "../utils/stats.js";
-import {getRating} from "../utils/common.js";
-import {FilterType} from "../constant.js";
+import {getRating, getHoursFromMinutes} from "../utils/common.js";
+import {StatsFilters} from "../constant.js";
 import SmartView from "./smart.js";
 import moment from "moment";
 
 const BAR_HEIGHT = 50;
 
-const Filters = {
-  ALL: `all`,
-  TODAY: `today`,
-  MONTH: `month`,
-  WEEK: `week`,
-  YEAR: `year`
-};
-
 const createTotalDurationTemplate = (films) => {
   const totalMinutes = films.reduce((acc, film) => {
-    return acc + film.runtime.minutes;
-  }, 0);
-  const totalHours = films.reduce((acc, film) => {
-    return acc + film.runtime.hours;
+    return acc + film.runtime;
   }, 0);
 
-  const hours = Math.floor(totalHours + (totalMinutes / 60));
-  const minutes = totalMinutes % 60;
+  const {hours, minutes} = getHoursFromMinutes(totalMinutes);
 
   return (
     `<p class="statistic__item-text">${hours}<span class="statistic__item-description">h</span> ${minutes} <span class="statistic__item-description">m</span></p>`
@@ -36,15 +24,15 @@ const createFilterTemplate = (currentFilter) => {
   return (
     `<form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
         <p class="statistic__filters-description">Show stats:</p>
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" ${currentFilter === Filters.ALL ? `checked` : ``}>
+        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" ${currentFilter === StatsFilters.ALL ? `checked` : ``}>
         <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today" ${currentFilter === Filters.TODAY ? `checked` : ``}>
+        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today" ${currentFilter === StatsFilters.TODAY ? `checked` : ``}>
         <label for="statistic-today" class="statistic__filters-label">Today</label>
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week" ${currentFilter === Filters.WEEK ? `checked` : ``}>
+        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week" ${currentFilter === StatsFilters.WEEK ? `checked` : ``}>
         <label for="statistic-week" class="statistic__filters-label">Week</label>
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month" ${currentFilter === Filters.MONTH ? `checked` : ``}>
+        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month" ${currentFilter === StatsFilters.MONTH ? `checked` : ``}>
         <label for="statistic-month" class="statistic__filters-label">Month</label>
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year" ${currentFilter === Filters.YEAR ? `checked` : ``}>
+        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year" ${currentFilter === StatsFilters.YEAR ? `checked` : ``}>
         <label for="statistic-year" class="statistic__filters-label">Year</label>
       </form>`
   );
@@ -161,7 +149,7 @@ export default class Stats extends SmartView {
     const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
     statisticCtx.height = BAR_HEIGHT * 5;
     const films = this._getFilmsByFilter(this._films, this._currentFilter);
-    this._chart = renderChart(statisticCtx, films);
+    renderChart(statisticCtx, films);
   }
 
   _filterTypeChangeHandler(evt) {
@@ -180,15 +168,15 @@ export default class Stats extends SmartView {
 
   _getFilmsByFilter(films, filter) {
     switch (filter) {
-      case FilterType.ALL:
+      case StatsFilters.ALL:
         return films;
-      case FilterType.TODAY:
+      case StatsFilters.TODAY:
         return films.filter((film) => moment(film.whenWatched).isSame(moment(), `day`));
-      case FilterType.WEEK:
+      case StatsFilters.WEEK:
         return films.filter((film) => moment(film.whenWatched).isAfter(moment().subtract(7, `days`)));
-      case FilterType.MONTH:
+      case StatsFilters.MONTH:
         return films.filter((film) => moment(film.whenWatched).isAfter(moment().subtract(1, `months`)));
-      case FilterType.YEAR:
+      case StatsFilters.YEAR:
         return films.filter((film) => moment(film.whenWatched).isAfter(moment().subtract(1, `years`)));
     }
     return films;

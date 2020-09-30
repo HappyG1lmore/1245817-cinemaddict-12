@@ -6,77 +6,47 @@ export default class Comments extends Observer {
     this._comments = [];
   }
 
-  setComments(comments, isSuccess) {
+  setComments(updateType, comments) {
     this._comments = comments.slice();
-    this.isSuccess = isSuccess;
   }
 
-  getComments() {
-    return this._comments;
-  }
-
-  updateComment(updateType, update) {
-    const index = this._comments.findIndex((comment) => comment.id === update.id);
-
-    if (index === -1) {
-      throw new Error(`Can't update unexisting film`);
-    }
-
-    this._comments = [
-      ...this._comments.slice(0, index),
-      update,
-      ...this._comments.slice(index + 1)
-    ];
-
-    this._notify(updateType, update);
+  getComments(filmId) {
+    return this._comments[filmId];
   }
 
   addComment(updateType, update) {
+    const index = Number(update.movie.id);
     this._comments = [
-      update,
-      ...this._comments
+      ...this._comments.slice(0, index),
+      update.comments,
+      ...this._comments.slice(index + 1)
     ];
-
     this._notify(updateType, update);
   }
 
   deleteComment(updateType, update) {
-    const index = this._comments.findIndex((comment) => comment.id === update[0].id);
+    const filmId = Number(update.film.id);
+    const filmComments = this.getComments(filmId);
+    const commentIndex = filmComments.findIndex(
+        (comment) => comment.id === update.commentId
+    );
 
-    if (index === -1) {
+    if (commentIndex === -1) {
       throw new Error(`Can't delete unexisting comment`);
     }
+
+    const updatedFilmComments = [
+      ...filmComments.slice(0, commentIndex),
+      ...filmComments.slice(commentIndex + 1)
+    ];
+
     this._comments = [
-      ...this._comments.slice(0, index),
-      ...this._comments.slice(index + 1)
+      ...this._comments.slice(0, filmId),
+      updatedFilmComments,
+      ...this._comments.slice(filmId + 1)
     ];
 
     this._notify(updateType);
   }
 
-  static adaptToClient(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment,
-        {
-          text: comment.comment,
-        });
-
-    delete adaptedComment.comment;
-
-    return adaptedComment;
-  }
-
-  static adaptToServer(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment, {
-          "comment": comment.text
-        }
-    );
-
-    delete adaptedComment.text;
-
-    return adaptedComment;
-  }
 }

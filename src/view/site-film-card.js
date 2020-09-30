@@ -1,6 +1,5 @@
-import {getRandomArrayItem} from "../utils/common.js";
 import AbstractView from "../abstract.js";
-
+import {getHoursFromMinutes} from "../utils/common.js";
 
 const MAX_COMMENT_LENGTH = 140;
 
@@ -9,7 +8,7 @@ const createFilmCardTemplate = (film) => {
     poster,
     title,
     rating,
-    runtime: {hours, minutes},
+    runtime,
     genres,
     comments,
     description,
@@ -21,6 +20,7 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
   const commentsCount = comments.length;
+  const {hours, minutes} = getHoursFromMinutes(runtime);
 
   const getYearInMS = (msec) => {
     const maxDate = new Date(msec);
@@ -35,9 +35,9 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__info">
       <span class="film-card__year">${getYearInMS(date)}</span>
       <span class="film-card__duration">${hours}h ${minutes}m</span>
-      <span class="film-card__genre">${getRandomArrayItem(genres)}</span>
+      <span class="film-card__genre">${genres[0] || ``}</span>
     </p>
-    <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+    <img src="${poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${
     description.length < MAX_COMMENT_LENGTH
       ? description

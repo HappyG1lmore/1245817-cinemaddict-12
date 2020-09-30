@@ -64,7 +64,14 @@ export const getRating = (films) => {
   } else if (films >= 11 && films <= 20) {
     rating = `Fan`;
   } else if (films >= 21) {
-    films = `Movie buff`;
+    rating = `Movie buff`;
   }
   return rating;
+};
+
+export const getHoursFromMinutes = (minutes) => {
+  return {
+    hours: Math.floor(minutes / 60),
+    minutes: minutes % 60,
+  };
 };

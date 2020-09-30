@@ -3,11 +3,9 @@ import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UpdateType, UserAction} from "../constant";
 
 export default class PopupPresenter {
-  constructor(mainContainer, changeData, resetPopups) {
+  constructor(mainContainer, changeData) {
     this._mainContainer = mainContainer;
     this._changeData = changeData;
-    this._resetPopups = resetPopups;
-
     this._popupComponent = null;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -23,10 +21,12 @@ export default class PopupPresenter {
   init(film, commentsModel) {
     this._film = film;
     this._commentsModel = commentsModel;
-    this._commentsModel.setComments(film.comments);
 
     const prevPopupComponent = this._popupComponent;
-    this._popupComponent = new FilmPopupView(this._film, this._commentsModel.getComments());
+    this._popupComponent = new FilmPopupView(
+        this._film,
+        this._commentsModel.getComments(this._film.id)
+    );
 
     this._popupComponent.setWatchlistCardClickHandler(this._handleWatchlistClick);
     this._popupComponent.setFavoriteCardClickHandler(this._handleFavoriteClick);
@@ -42,9 +42,7 @@ export default class PopupPresenter {
     }
 
     if (prevPopupComponent) {
-
       replace(this._popupComponent, prevPopupComponent);
-
       return;
     }
 
@@ -97,21 +95,21 @@ export default class PopupPresenter {
     );
   }
 
-  _handleAddComment(comment) {
-    this._commentsModel.addComment(UpdateType.MINOR, comment);
+  _handleAddComment(film, comment) {
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.PATCH, {film, comment});
   }
 
-  _handleDeleteComment(comment) {
-    this._commentsModel.deleteComment(UpdateType.MINOR, comment);
+  _handleDeleteComment(film, commentId) {
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.PATCH, {film, commentId});
   }
 
   _onEscKeyDown(film) {
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM_MODEL, UpdateType.MINOR, film);
     this.destroy();
   }
 
   _onCloseBtnClick(film) {
-    this._changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, film);
+    this._changeData(UserAction.UPDATE_FILM_MODEL, UpdateType.MINOR, film);
     this.destroy();
   }
 }

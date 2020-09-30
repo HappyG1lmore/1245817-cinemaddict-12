@@ -1,20 +1,19 @@
-import {getDateInMS} from "../utils/common.js";
 import {createElement, render, RenderPosition} from "../utils/render.js";
 import CommentView from "../view/comment.js";
 import SmartView from "./smart.js";
-import {isEscPressed, isEnterPressed} from "../utils/common.js";
-import {nanoid} from 'nanoid';
-import {getRandomDate} from "../utils/common.js";
+import {isEscPressed, isEnterPressed, getHoursFromMinutes, getDateInMS} from "../utils/common.js";
+import {SHAKE_ANIMATION_CLASSNAME} from "../constant";
 
 const createPopupTemplate = (film) => {
   const {
     poster,
     title,
+    alternativeTitle,
     rating,
     actors,
     writers,
     director,
-    runtime: {hours, minutes},
+    runtime,
     genres,
     comments,
     country,
@@ -22,10 +21,12 @@ const createPopupTemplate = (film) => {
     date,
     isWatchlist,
     isWatched,
-    isFavorite
-
+    isFavorite,
+    ageRating
   } = film;
+
   const commentsCount = comments.length;
+  const {hours, minutes} = getHoursFromMinutes(runtime);
 
   const getGenreElements = (array) => {
 
@@ -47,16 +48,16 @@ const createPopupTemplate = (film) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+            <img class="film-details__poster-img" src="${poster}" alt="">
 
-            <p class="film-details__age">18+</p>
+            <p class="film-details__age">${ageRating}+</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
                 <h3 class="film-details__title">${title}</h3>
-                <p class="film-details__title-original">Original: ${title}</p>
+                <p class="film-details__title-original">Original: ${alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
@@ -225,7 +226,7 @@ export default class FilmPopup extends SmartView {
     this.setFavoriteCardClickHandler(this._callback.favoriteClick);
     this.setWatchedCardClickHandler(this._callback.watchedClick);
     this.setDeleteCommentHandler(this._callback.deleteClick);
-    this.setAddCommentHandler(this._callback.addComment);
+    this.setAddCommentHandler(this._callback.addComment, this._film);
   }
 
   _setInnerHandlers() {
@@ -235,29 +236,17 @@ export default class FilmPopup extends SmartView {
 
   _isWatchListToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isWatchlist: !this._film.isWatchlist
-    },
-    false);
-    this._callback.watchlistClick(this.film);
+    this._callback.watchlistClick();
   }
 
   _isWatchedToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isWatched: !this._film.isWatched
-    },
-    false);
-    this._callback.watchedClick(this.film);
+    this._callback.watchedClick();
   }
 
   _isFavoriteToggleHandler(evt) {
     evt.preventDefault();
-    this.updateData({
-      isFavorite: !this._film.isFavorite
-    },
-    false);
-    this._callback.favoriteClick(this.film);
+    this._callback.favoriteClick();
   }
 
   setFavoriteCardClickHandler(callback) {
@@ -287,20 +276,31 @@ export default class FilmPopup extends SmartView {
 
   _addCommentHandler(evt) {
     if (isEnterPressed(evt) && (evt.ctrlKey || evt.metaKey)) {
+      const messageInput = this.getElement().querySelector(`.film-details__comment-input`);
+      const messageValue = messageInput.value.trim();
+      const emojiList = this.getElement().querySelector(`.film-details__emoji-list`);
+      const selectedEmoji = this.getElement().querySelector(`.film-details__add-emoji-img`);
 
-      const message = this.getElement().querySelector(`.film-details__comment-input`).value.trim();
-      const emoji = this.getElement().querySelector(`.film-details__add-emoji-img`).dataset.emoji;
+      messageInput.classList.remove(SHAKE_ANIMATION_CLASSNAME);
+      emojiList.classList.remove(SHAKE_ANIMATION_CLASSNAME);
 
-      if (message && emoji) {
-        const newComment = {
-          text: message,
-          emotion: emoji,
-          author: `User`,
-          date: getRandomDate(),
-          id: nanoid(),
-        };
-        this._callback.addComment(newComment);
+      if (!messageValue) {
+        setTimeout(() => messageInput.classList.add(SHAKE_ANIMATION_CLASSNAME), 0);
+        return;
       }
+
+      if (!selectedEmoji) {
+        setTimeout(() => emojiList.classList.add(SHAKE_ANIMATION_CLASSNAME), 0);
+        return;
+      }
+
+      const newComment = {
+        text: messageValue,
+        emotion: selectedEmoji.dataset.emoji,
+        date: new Date(),
+      };
+
+      this._callback.addComment(this._film, newComment);
     }
   }
 
@@ -318,8 +318,7 @@ export default class FilmPopup extends SmartView {
   _deleteClickHandler(evt) {
     evt.preventDefault();
     const currentCommentId = evt.target.closest(`.film-details__comment`).dataset.id;
-    const currentComment = this._comments.filter((comment) => comment.id === currentCommentId);
-    this._callback.deleteClick(currentComment, currentCommentId);
+    this._callback.deleteClick(this._film, currentCommentId);
   }
 }
 
