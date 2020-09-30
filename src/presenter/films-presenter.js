@@ -309,7 +309,7 @@ export default class FilmsPresenter {
   }
 
   _renderFilm(container, filmInfo, savePresenter) {
-    const filmCard = new FilmPresenter(
+    let filmCard = new FilmPresenter(
         container,
         this._handleViewAction,
         this._handleResetPopups,

@@ -22,7 +22,7 @@ export const getRandomArrayItem = function (array) {
 };
 
 export const getRandomLengthArray = function (array, max) {
-  const tempArray = [];
+  let tempArray = [];
   for (let i = 0; i < getRandomIntFromRange(1, max); i++) {
     tempArray.push(array[getRandomIntFromRange(0, array.length - 1)]);
   }
