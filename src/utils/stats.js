@@ -4,7 +4,7 @@ export const sortGenres = (films) => {
   films.forEach((film) => {
     allGenres = allGenres.concat(film.genres);
   });
-  let numberWatchedGenres = {};
+  const numberWatchedGenres = {};
   allGenres.forEach((genre) => {
     numberWatchedGenres[genre] = numberWatchedGenres[genre] + 1 || 1;
   });
