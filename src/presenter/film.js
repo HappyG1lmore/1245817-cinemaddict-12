@@ -27,7 +27,6 @@ export default class Film {
 
     this._film = film;
     this._filmCardComponent = new FilmCardView(this._film);
-
     this._filmCardComponent.setClickPopupHandler(this._filmCardClickHandler);
     this._filmCardComponent.setClickWatchlistHandler(this._handleWatchlistClick);
     this._filmCardComponent.setClickWatchedHandler(this._handleWatchedClick);
